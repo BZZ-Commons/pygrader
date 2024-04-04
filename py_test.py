@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from dataclasses import dataclass
 from io import StringIO
@@ -7,13 +8,13 @@ import pytest
 from _pytest.config import ExitCode
 
 
-def main():
+def py_test():
     cases_list = load_cases()
     results = {
         'category': 'pytest',
         'points': 0,
         'max': 0,
-        'messages': []
+        'feedback': []
     }
     total_points = 0
     total_max = 0
@@ -21,7 +22,7 @@ def main():
     for case in cases_list:
         result = {
             'name': case.name,
-            'message': '',
+            'feedback': '',
             'expected': '',
             'actual': '',
             'points': 0,
@@ -31,59 +32,64 @@ def main():
         with Capturing() as output:
             exitcode = pytest.main(args)
         if exitcode == ExitCode.OK:
-            summary = output[len(output)-1]
+            summary = output[len(output) - 1]
             if 'passed' in summary:
-                result['message'] = 'Success'
+                result['feedback'] = 'Success'
                 result['points'] = case.points
             elif 'xfailed' in summary:
-                result['message'] = 'Success: Fails as expected'
+                result['feedback'] = 'Success: Fails as expected'
                 result['points'] = case.points
             elif 'skipped' in summary:
-                result['message'] = 'Test was skipped at this time'
+                result['feedback'] = 'Test was skipped at this time'
         elif exitcode == ExitCode.TESTS_FAILED:
             extract_assertion(output, result)
             print('assert fail')
         else:
-            result.message = 'Unknown error, check GitHub Actions for details'
+            result['feedback'] = 'Unknown error, check GitHub Actions for details'
             print('Fail')
 
         total_points += result['points']
         total_max += result['max']
-        results['messages'].append(result)
+        results['feedback'].append(result)
     results['points'] = total_points
     results['max'] = total_max
-    json_out = json.dumps(results)
-    print(json_out)
+
+    return results
 
 
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
         if 'AssertionError:' in line:
             parts = line.split('AssertionError:', 1)
-            result['message'] = 'Assertion Error: ' + parts[1]
+            result['feedback'] = 'Assertion Error: ' + parts[1]
             result['expected'] = message[index + 1]
             result['actual'] = message[index + 2]
             break
-            pass
 
 
 def load_cases() -> list:
     """
-    loads all test cases into a list
-    :return: list
+    loads all test cases
+    :return: a list of testcases to be run
     :rtype: none
     """
     cases_list = list()
-    file = open('./pygrader.json', encoding='UTF-8')
-    cases = json.load(file)
-    for item in cases:
-        testcase = Testcase(
-            name=item['name'],
-            function=item['function'],
-            timeout=item['timeout'],
-            points=item['points']
-        )
-        cases_list.append(testcase)
+
+    FILE_UNITTESTS = os.environ['FILE_UNITTESTS']
+
+    try:
+        with open(f'./.github/classroom/{FILE_UNITTESTS}', encoding='UTF-8') as file:
+            cases = json.load(file)
+            for item in cases:
+                testcase = Testcase(
+                    name=item['name'],
+                    function=item['function'],
+                    timeout=item['timeout'],
+                    points=item['points']
+                )
+                cases_list.append(testcase)
+    except IOError as ex:
+        print(f'file {FILE_UNITTESTS} not found')
     return cases_list
 
 
@@ -147,4 +153,4 @@ class Capturing(list):
 
 
 if __name__ == '__main__':
-    main()
+    pass
