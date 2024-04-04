@@ -78,7 +78,7 @@ def load_cases() -> list:
     FILE_UNITTESTS = os.environ['FILE_UNITTESTS']
 
     try:
-        with open(f'./.github/classroom/{FILE_UNITTESTS}', encoding='UTF-8') as file:
+        with open(f'./.github/autograding/{FILE_UNITTESTS}', encoding='UTF-8') as file:
             cases = json.load(file)
             for item in cases:
                 testcase = Testcase(
