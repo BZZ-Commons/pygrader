@@ -115,7 +115,7 @@ def update_moodle(
     print(url)
     print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
-    print(response)
+    print(response.text)
 
 
 if __name__ == '__main__':
