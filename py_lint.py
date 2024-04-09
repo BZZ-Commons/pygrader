@@ -4,7 +4,7 @@ from pylint.reporters import CollectingReporter
 
 def py_lint():
     pylint_opts = [
-        'main.py'
+        '*'
     ]
 
     reporter = CollectingReporter()
