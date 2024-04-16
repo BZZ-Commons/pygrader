@@ -65,7 +65,7 @@ def wrap_feedback_table(feedback: str, title: str) -> str:
     :param title: Title of the feedback
     :return:
     """
-    feedback += f'<h3>{title}</h3>'
+    feedback = f'<h3>{title}</h3>' + feedback
     return feedback
 
 
