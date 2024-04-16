@@ -49,11 +49,13 @@ def collect_results() -> dict:
     testresults = py_test()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
+    result['feedback'] += '<h1>Unittests</h1>'
     result['feedback'] += html_out(testresults['feedback'])
-    print(testresults)
+    #print(testresults)
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
+    result['feedback'] += '<h1>Linting</h1>'
     result['feedback'] += html_out(testresults['feedback'])
 
     return result
@@ -112,11 +114,11 @@ def update_moodle(
         'externallink': external_link,
         'feedback': feedback
     }
-    print(url)
-    print(payload)
+    #print(url)
+    #print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
-    print(response)
-    print(response.text)
+    #print(response)
+    #print(response.text)
 
 
 if __name__ == '__main__':
