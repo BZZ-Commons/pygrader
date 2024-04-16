@@ -56,6 +56,7 @@ def collect_results() -> dict:
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Linting')
 
+    result['points'] = round(result['points'], 2)
     return result
 
 def wrap_feedback_table(testresults: dict, title: str) -> str:
