@@ -68,7 +68,7 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
 
     feedback = f'<h3>{title}</h3>'
     feedback += html_out(testresults['feedback'])
-    feedback += f'<b>{testresults["points"]}/{testresults["max"]} Punkte</b>'
+    feedback += f'<b>{testresults["points"]:.2f}/{testresults["max"]} Punkte</b>'
     return feedback
 
 
