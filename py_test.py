@@ -7,9 +7,11 @@ from io import StringIO
 import pytest
 from _pytest.config import ExitCode
 
+cases_list = list()
 
 def py_test():
-    cases_list = load_cases()
+    #global cases_list =
+    load_cases()
     results = {
         'category': 'pytest',
         'points': 0,
@@ -73,7 +75,7 @@ def load_cases() -> list:
     :return: a list of testcases to be run
     :rtype: none
     """
-    cases_list = list()
+    # cases_list = list()
 
     FILE_UNITTESTS = os.environ['FILE_UNITTESTS']
 
@@ -90,7 +92,7 @@ def load_cases() -> list:
                 cases_list.append(testcase)
     except IOError as ex:
         print(f'file {FILE_UNITTESTS} not found')
-    return cases_list
+    #return cases_list
 
 
 @dataclass
@@ -126,8 +128,12 @@ def pytest_exception_interact(node, call, report):
     print(report)
 
     if report.failed:
-        print("########################"+str(call.excinfo.value))
-        print("########################"+node.nodeid)
+        #matching_case = next((case for case in cases_list if case.name == node.nodeid.split("::")[1]), None)
+        #print("AAAAAAAAA"+matching_case.name)
+        #matching_case.expected = str(call.excinfo.value)
+        #matching_case.actual = str(call.excinfo.value)
+        #print("########################"+str(call.excinfo.value))
+        #print("########################"+node.nodeid)
         # Extrahiere den fehlerhaften Code und den Testfall
         fehlerhafter_code = str(call.excinfo.value)
         testfall = node.nodeid
