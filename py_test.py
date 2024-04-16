@@ -7,11 +7,8 @@ from io import StringIO
 import pytest
 from _pytest.config import ExitCode
 
-cases_list = list()
-
 def py_test():
-    #global cases_list =
-    load_cases()
+    cases_list = load_cases()
     results = {
         'category': 'pytest',
         'points': 0,
@@ -32,7 +29,7 @@ def py_test():
         }
         args[1] = case.function
         with Capturing() as output:
-            exitcode = pytest.main(args,plugins=["py_test"])
+            exitcode = pytest.main(args)
         if exitcode == ExitCode.OK:
             summary = output[len(output) - 1]
             if 'passed' in summary:
@@ -75,7 +72,7 @@ def load_cases() -> list:
     :return: a list of testcases to be run
     :rtype: none
     """
-    # cases_list = list()
+    cases_list = list()
 
     FILE_UNITTESTS = os.environ['FILE_UNITTESTS']
 
@@ -92,7 +89,7 @@ def load_cases() -> list:
                 cases_list.append(testcase)
     except IOError as ex:
         print(f'file {FILE_UNITTESTS} not found')
-    #return cases_list
+    return cases_list
 
 
 @dataclass
@@ -119,27 +116,6 @@ class Capturing(list):
         self.extend(self._stringio.getvalue().splitlines())
         del self._stringio  # free up some memory
         sys.stdout = self._stdout
-
-
-def pytest_exception_interact(node, call, report):
-    '''
-    Diese Funktion wird aufgerufen, wenn ein Testfall fehlschlägt.
-    '''
-    print(report)
-
-    if report.failed:
-        #matching_case = next((case for case in cases_list if case.name == node.nodeid.split("::")[1]), None)
-        #print("AAAAAAAAA"+matching_case.name)
-        #matching_case.expected = str(call.excinfo.value)
-        #matching_case.actual = str(call.excinfo.value)
-        #print("########################"+str(call.excinfo.value))
-        #print("########################"+node.nodeid)
-        # Extrahiere den fehlerhaften Code und den Testfall
-        fehlerhafter_code = str(call.excinfo.value)
-        testfall = node.nodeid
-
-        # Sende die Informationen an die API (Pseudocode)
-        #sende_zu_chatgpt_api(fehlerhafter_code, testfall)
 
 if __name__ == '__main__':
     pass
