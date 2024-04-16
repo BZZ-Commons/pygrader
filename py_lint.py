@@ -31,4 +31,4 @@ def py_lint():
 
 
 if __name__ == '__main__':
-    pass
+    py_lint()

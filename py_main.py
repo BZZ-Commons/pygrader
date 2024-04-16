@@ -24,6 +24,7 @@ def main():
     print(f'assignment={assignment}')
 
     result = collect_results()
+    print(result)
     update_moodle(
         result=result,
         target_url='https://moodle.it.bzz.ch/moodle',
@@ -49,23 +50,25 @@ def collect_results() -> dict:
     testresults = py_test()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
-    result['feedback'] += wrap_feedback_table(html_out(testresults['feedback']), 'Unittests')
-    #print(testresults)
+    result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
-    result['feedback'] += wrap_feedback_table(html_out(testresults['feedback']), 'Linting')
+    result['feedback'] += wrap_feedback_table(testresults, 'Linting')
 
     return result
 
-def wrap_feedback_table(feedback: str, title: str) -> str:
+def wrap_feedback_table(testresults: dict, title: str) -> str:
     """
     Adds a title to the feedback table and a total for the points
     :param feedback: Feedback table
     :param title: Title of the feedback
     :return:
     """
-    feedback = f'<h3>{title}</h3>' + feedback
+
+    feedback = f'<h3>{title}</h3>'
+    feedback += html_out(testresults['feedback'])
+    feedback += f'<b>{testresults["points"]}/{testresults["max"]}</b>'
     return feedback
 
 
