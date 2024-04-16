@@ -58,7 +58,7 @@ def py_test():
 
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
-        print(index,line)
+        #print(index,line)
         if 'AssertionError' in line:
             result['feedback'] = 'Assertion Error'
             result['expected'] = str.split(message[index - 2],':' ,1)[1].strip()
