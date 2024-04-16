@@ -7,11 +7,9 @@ from io import StringIO
 import pytest
 from _pytest.config import ExitCode
 
-cases_list = list()
 
 def py_test():
-    #global cases_list =
-    load_cases()
+    cases_list = load_cases()
     results = {
         'category': 'pytest',
         'points': 0,
@@ -61,7 +59,7 @@ def py_test():
 
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
-        print(index,line)
+        #print(index,line)
         if 'AssertionError' in line:
             result['feedback'] = 'Assertion Error'
             result['expected'] = str.split(message[index - 2],':' ,1)[1].strip()
@@ -75,7 +73,7 @@ def load_cases() -> list:
     :return: a list of testcases to be run
     :rtype: none
     """
-    # cases_list = list()
+    cases_list = list()
 
     FILE_UNITTESTS = os.environ['FILE_UNITTESTS']
 
@@ -92,7 +90,7 @@ def load_cases() -> list:
                 cases_list.append(testcase)
     except IOError as ex:
         print(f'file {FILE_UNITTESTS} not found')
-    #return cases_list
+    return cases_list
 
 
 @dataclass
@@ -125,17 +123,22 @@ def pytest_exception_interact(node, call, report):
     '''
     Diese Funktion wird aufgerufen, wenn ein Testfall fehlschlägt.
     '''
-    print(report)
+    print("AAAAAAAAa")
+    exception = {
+        'function': "",
+        'call': "",
+        'report': ""
+    }
 
     if report.failed:
-        #matching_case = next((case for case in cases_list if case.name == node.nodeid.split("::")[1]), None)
-        #print("AAAAAAAAA"+matching_case.name)
-        #matching_case.expected = str(call.excinfo.value)
-        #matching_case.actual = str(call.excinfo.value)
-        #print("########################"+str(call.excinfo.value))
-        #print("########################"+node.nodeid)
+        print("########################"+str(call.excinfo.value))
+        print("########################"+node.nodeid)
         # Extrahiere den fehlerhaften Code und den Testfall
         fehlerhafter_code = str(call.excinfo.value)
+        testfall = node.nodeid
+        exception['function'] = node.nodeid.split("::")[1]
+        print("AAAAAAAAa" + exception['function'])
+        #print(str(call.excinfo.value))
         testfall = node.nodeid
 
         # Sende die Informationen an die API (Pseudocode)
