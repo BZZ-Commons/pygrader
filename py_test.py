@@ -30,7 +30,7 @@ def py_test():
         }
         args[1] = case.function
         with Capturing() as output:
-            exitcode = pytest.main(args)
+            exitcode = pytest.main(args,plugins=["py_test"])
         if exitcode == ExitCode.OK:
             summary = output[len(output) - 1]
             if 'passed' in summary:
@@ -59,11 +59,11 @@ def py_test():
 
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
-        if 'AssertionError:' in line:
-            parts = line.split('AssertionError:', 1)
-            result['feedback'] = 'Assertion Error: ' + parts[1]
-            result['expected'] = message[index + 1]
-            result['actual'] = message[index + 2]
+        print(index,line)
+        if 'AssertionError' in line:
+            result['feedback'] = 'Assertion Error'
+            result['expected'] = str.split(message[index - 2],':' ,1)[1].strip()
+            result['actual'] = str.split(message[index - 3],':' ,1)[1].strip()
             break
 
 
@@ -103,39 +103,6 @@ class Testcase:
     timeout: int
     points: float
 
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def function(self):
-        return self._function
-
-    @function.setter
-    def function(self, value):
-        self._function = value
-
-    @property
-    def timeout(self):
-        return self._timeout
-
-    @timeout.setter
-    def timeout(self, value):
-        self._timeout = value
-
-    @property
-    def points(self):
-        return self._points
-
-    @points.setter
-    def points(self, value):
-        self._points = value
-
-
 class Capturing(list):
     """
     captures the output to stdout and stderr
@@ -151,6 +118,22 @@ class Capturing(list):
         del self._stringio  # free up some memory
         sys.stdout = self._stdout
 
+
+def pytest_exception_interact(node, call, report):
+    '''
+    Diese Funktion wird aufgerufen, wenn ein Testfall fehlschlägt.
+    '''
+    print(report)
+
+    if report.failed:
+        print("########################"+str(call.excinfo.value))
+        print("########################"+node.nodeid)
+        # Extrahiere den fehlerhaften Code und den Testfall
+        fehlerhafter_code = str(call.excinfo.value)
+        testfall = node.nodeid
+
+        # Sende die Informationen an die API (Pseudocode)
+        #sende_zu_chatgpt_api(fehlerhafter_code, testfall)
 
 if __name__ == '__main__':
     pass

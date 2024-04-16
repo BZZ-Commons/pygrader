@@ -50,7 +50,7 @@ def collect_results() -> dict:
     result['points'] += testresults['points']
     result['max'] += testresults['max']
     result['feedback'] += html_out(testresults['feedback'])
-
+    print(testresults)
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
@@ -112,12 +112,16 @@ def update_moodle(
         'externallink': external_link,
         'feedback': feedback
     }
-    print(url)
-    print(payload)
+    #print(url)
+    #print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
-    print(response)
-    print(response.text)
+    #print(response)
+    #print(response.text)
 
 
 if __name__ == '__main__':
+    from dotenv import load_dotenv
+
+    # loading variables from .env file
+    load_dotenv()
     main()
