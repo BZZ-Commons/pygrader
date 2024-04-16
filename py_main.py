@@ -49,16 +49,24 @@ def collect_results() -> dict:
     testresults = py_test()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
-    result['feedback'] += '<h1>Unittests</h1>'
-    result['feedback'] += html_out(testresults['feedback'])
+    result['feedback'] += wrap_feedback_table(html_out(testresults['feedback']), 'Unittests')
     #print(testresults)
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
-    result['feedback'] += '<h1>Linting</h1>'
-    result['feedback'] += html_out(testresults['feedback'])
+    result['feedback'] += wrap_feedback_table(html_out(testresults['feedback']), 'Linting')
 
     return result
+
+def wrap_feedback_table(feedback: str, title: str) -> str:
+    """
+    Adds a title to the feedback table and a total for the points
+    :param feedback: Feedback table
+    :param title: Title of the feedback
+    :return:
+    """
+    feedback += f'<h3>{title}</h3>'
+    return feedback
 
 
 def html_out(results: dict) -> str:
