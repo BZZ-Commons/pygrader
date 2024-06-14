@@ -29,7 +29,7 @@ def main():
         result=result,
         target_url='https://moodle.it.bzz.ch/moodle',
         token=TOKEN,
-        function='mod_assignexternal_update_grade',
+        function=FUNCTION,
         user_name=USERNAME,
         assignment=assignment,
         external_link=f'{SERVER}/{REPOPATH}'
