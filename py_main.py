@@ -68,7 +68,10 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
     """
 
     feedback = f'<h3>{title}</h3>'
+    feedback += html_out(testresults['feedback'])
+    feedback += '\n'
     feedback += markdown_out(testresults['feedback'])
+    feedback += '\n'
     feedback += f'<b>{testresults["points"]:.2f}/{testresults["max"]} Punkte</b>'
     feedback += '\n***'
     return feedback
@@ -107,8 +110,8 @@ def markdown_out(results: dict) -> str:
     headers = list(results[0].keys())
 
     # Start the table with headers
-    table = '\n\n'
-    table += '| ' + ' | '.join(headers) + ' |\n'
+
+    table = '| ' + ' | '.join(headers) + ' |\n'
     table += '| ' + ' | '.join(['---'] * len(headers)) + ' |\n'
 
     # Add the rows
