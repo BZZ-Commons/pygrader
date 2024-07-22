@@ -107,7 +107,8 @@ def markdown_out(results: dict) -> str:
     headers = list(results[0].keys())
 
     # Start the table with headers
-    table = '| ' + ' | '.join(headers) + ' |\n'
+    table = '\n'
+    table += '| ' + ' | '.join(headers) + ' |\n'
     table += '| ' + ' | '.join(['---'] * len(headers)) + ' |\n'
 
     # Add the rows
