@@ -68,7 +68,7 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
     """
 
     feedback = f'<h3>{title}</h3>'
-    feedback += html_out(testresults['feedback'])
+    #feedback += html_out(testresults['feedback'])
     feedback += '\n'
     feedback += markdown_out(testresults['feedback'])
     feedback += '\n'
