@@ -51,7 +51,10 @@ def collect_results() -> dict:
     result['points'] += testresults['points']
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
-    #result['feedback'] += markdown_out(testresults)
+    result['feedback'] += markdown_out(testresults['feedback'])
+    print('########')
+    print(markdown_out(testresults['feedback']))
+    print('########')
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
@@ -104,19 +107,16 @@ def markdown_out(results: dict) -> str:
     :return:
     """
 
-    # Get the headers from the dictionary keys
-    headers = list(results.keys())
-
-    # Get the number of rows (assuming all lists have the same length)
-    num_rows = len(results[headers[0]])
+    # Extract headers
+    headers = list(results[0].keys())
 
     # Start the table with headers
     table = '| ' + ' | '.join(headers) + ' |\n'
     table += '| ' + ' | '.join(['---'] * len(headers)) + ' |\n'
 
     # Add the rows
-    for i in range(num_rows):
-        row = [str(results[header][i]) for header in headers]
+    for entry in results:
+        row = [str(entry[header]) for header in headers]
         table += '| ' + ' | '.join(row) + ' |\n'
 
     # Print the result
