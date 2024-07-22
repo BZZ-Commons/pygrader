@@ -51,7 +51,7 @@ def collect_results() -> dict:
     result['points'] += testresults['points']
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
-    result['feedback'] += markdown_out(testresults)
+    #result['feedback'] += markdown_out(testresults)
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
