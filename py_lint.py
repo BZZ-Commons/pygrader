@@ -26,7 +26,6 @@ def py_lint():
 
     results['points'] = pylint_obj.linter.stats.global_note
 
-    print(results)
     return results
 
 

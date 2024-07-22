@@ -21,10 +21,8 @@ def main():
         f'TARGET_URL={TARGET_URL}, TOKEN={TOKEN}, FUNCTION={FUNCTION}, USERNAME={USERNAME}, SERVER={SERVER}, REPO={REPOPATH}')
     repository = REPOPATH.split('/')[1]
     assignment = repository.removesuffix('-' + USERNAME)
-    print(f'assignment={assignment}')
 
     result = collect_results()
-    print(result)
     update_moodle(
         result=result,
         target_url='https://moodle.it.bzz.ch/moodle',
@@ -47,10 +45,12 @@ def collect_results() -> dict:
         'feedback': ''
     }
 
+    # Pytest
     testresults = py_test()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
+    # Pylint
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
@@ -68,7 +68,6 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
     """
 
     feedback = f'#{title}'
-    #feedback += html_out(testresults['feedback'])
     feedback += '\n'
     feedback += markdown_out(testresults['feedback'])
     feedback += '\n'
@@ -76,28 +75,6 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
     feedback += '\n***\n'
     return feedback
 
-
-def html_out(results: dict) -> str:
-    """
-    creates a html table from the results
-    :param results:
-    :return:
-    """
-    first_line = True
-    output = '<table>'
-    thead = '<tr>'
-    for result in results:
-        row = '<tr>'
-        for key, value in result.items():
-            if first_line:
-                thead += f'<th>{key}</th>'
-            row += f'<td>{value}</td>'
-        if first_line:
-            output += f'{thead}</tr>'
-            first_line = False
-        output += f'{row}</tr>'
-    output += '</table>'
-    return output
 
 def markdown_out(results: dict) -> str:
     """
@@ -118,9 +95,6 @@ def markdown_out(results: dict) -> str:
     for entry in results:
         row = [str(entry[header]) for header in headers]
         table += '| ' + ' | '.join(row) + ' |\n'
-
-    # Print the result
-    print(table)
 
     return table
 
