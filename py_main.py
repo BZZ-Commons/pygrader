@@ -51,7 +51,10 @@ def collect_results() -> dict:
     result['points'] += testresults['points']
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
+    result['feedback'] += ('\n')
     result['feedback'] += markdown_out(testresults['feedback'])
+    result['feedback'] += ('\n')
+
     print('########')
     print(markdown_out(testresults['feedback']))
     print('########')
