@@ -51,13 +51,6 @@ def collect_results() -> dict:
     result['points'] += testresults['points']
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
-    result['feedback'] += ('\n')
-    result['feedback'] += markdown_out(testresults['feedback'])
-    result['feedback'] += ('\n')
-
-    print('########')
-    print(markdown_out(testresults['feedback']))
-    print('########')
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
@@ -75,7 +68,7 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
     """
 
     feedback = f'<h3>{title}</h3>'
-    feedback += html_out(testresults['feedback'])
+    feedback += markdown_out(testresults['feedback'])
     feedback += f'<b>{testresults["points"]:.2f}/{testresults["max"]} Punkte</b>'
     feedback += '\n***'
     return feedback
