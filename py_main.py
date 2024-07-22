@@ -51,6 +51,7 @@ def collect_results() -> dict:
     result['points'] += testresults['points']
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
+    result['feedback'] += markdown_out(testresults)
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
@@ -96,6 +97,32 @@ def html_out(results: dict) -> str:
     output += '</table>'
     return output
 
+def markdown_out(results: dict) -> str:
+    """
+    creates a markdown table from the results
+    :param results:
+    :return:
+    """
+
+    # Get the headers from the dictionary keys
+    headers = list(results.keys())
+
+    # Get the number of rows (assuming all lists have the same length)
+    num_rows = len(results[headers[0]])
+
+    # Start the table with headers
+    table = '| ' + ' | '.join(headers) + ' |\n'
+    table += '| ' + ' | '.join(['---'] * len(headers)) + ' |\n'
+
+    # Add the rows
+    for i in range(num_rows):
+        row = [str(results[header][i]) for header in headers]
+        table += '| ' + ' | '.join(row) + ' |\n'
+
+    # Print the result
+    print(table)
+
+    return table
 
 def update_moodle(
         result: dict,
