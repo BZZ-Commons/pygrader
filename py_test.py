@@ -60,10 +60,19 @@ def py_test():
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
         print(index,line)
+        """
         if 'AssertionError' in line:
             result['feedback'] = 'Assertion Error'
             result['expected'] = str.split(message[index - 2],':' ,1)[1].strip()
             result['actual'] = str.split(message[index - 3],':' ,1)[1].strip()
+            break
+        """
+        if 'AssertionError' in line:
+            result['feedback'] = 'Assertion Error'
+            expected_value = float(str.split(message[index - 2], ':', 1)[1].strip())
+            actual_value = float(str.split(message[index - 3], ':', 1)[1].strip())
+            result['expected'] = f'{expected_value:.2f}'
+            result['actual'] = f'{actual_value:.2f}'
             break
 
 
@@ -119,7 +128,7 @@ class Capturing(list):
         sys.stdout = self._stdout
 
 
-def pytest_exception_interactt(node, call, report):
+def pytest_exception_interact(node, call, report):
     '''
     Diese Funktion wird aufgerufen, wenn ein Testfall fehlschlägt.
     '''
