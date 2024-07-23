@@ -1,12 +1,24 @@
 from pylint import lint
 from pylint.reporters import CollectingReporter
 
+import os
+import json
+import glob
 
 def py_lint():
     pylint_opts = [
-        'main.py',
+        '--rcfile=.github/autograding/pylintrc',
     ]
 
+    # Add files from config file or all python files in the directory
+    files = load_config().get('files')
+    if files:
+        pylint_opts.extend(files)
+    else:
+        python_files = glob.glob('./*.py')
+        pylint_opts.extend(python_files)
+
+    print(pylint_opts)
     reporter = CollectingReporter()
     pylint_obj = lint.Run(pylint_opts, reporter=reporter, exit=False)
     results = {
@@ -25,8 +37,18 @@ def py_lint():
         results['feedback'].append(output)
 
     results['points'] = pylint_obj.linter.stats.global_note
-
+    print(results)
     return results
+
+
+def load_config() -> dict:
+    FILE_LINT = os.environ['FILE_LINT']
+    try:
+        with open(f'./.github/autograding/{FILE_LINT}', encoding='UTF-8') as file:
+            params = json.load(file)
+    except IOError as ex:
+        print(f'file {FILE_LINT} not found')
+    return params
 
 
 if __name__ == '__main__':
