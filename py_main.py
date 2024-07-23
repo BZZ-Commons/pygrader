@@ -1,5 +1,5 @@
 import os
-import urllib
+import urllib.parse
 
 import requests
 
@@ -8,27 +8,29 @@ from py_test import py_test
 
 
 def main():
-    TARGET_URL = os.environ['TARGET_URL']
-    TOKEN = os.getenv('TOKEN')
-    FUNCTION = os.environ['FUNCTION']
-    USERNAME = os.environ['USERNAME']
-    SERVER = os.environ['SERVER']
-    REPOPATH = os.environ['REPO']
+    target_url = os.environ['TARGET_URL']
+    token = os.getenv('TOKEN')
+    function = os.environ['FUNCTION']
+    username = os.environ['USERNAME']
+    server = os.environ['SERVER']
+    repopath = os.environ['REPO']
 
     print(
-        f'TARGET_URL={TARGET_URL}, TOKEN={TOKEN}, FUNCTION={FUNCTION}, USERNAME={USERNAME}, SERVER={SERVER}, REPO={REPOPATH}')
-    repository = REPOPATH.split('/')[1]
-    assignment = repository.removesuffix('-' + USERNAME)
+        f'TARGET_URL={target_url}, TOKEN={token}, FUNCTION={function}, '
+        f'USERNAME={username}, SERVER={server}, REPO={repopath}')
+
+    repository = repopath.split('/')[1]
+    assignment = repository.removesuffix('-' + username)
 
     result = collect_results()
     update_moodle(
         result=result,
         target_url='https://moodle.it.bzz.ch/moodle',
-        token=TOKEN,
-        function=FUNCTION,
-        user_name=USERNAME,
+        token=token,
+        function=function,
+        user_name=username,
         assignment=assignment,
-        external_link=f'{SERVER}/{REPOPATH}'
+        external_link=f'{server}/{repopath}'
     )
 
 
@@ -57,10 +59,11 @@ def collect_results() -> dict:
     result['points'] = round(result['points'], 2)
     return result
 
+
 def wrap_feedback_table(testresults: dict, title: str) -> str:
     """
     Adds a title to the feedback table and a total for the points
-    :param feedback: Feedback table
+    :param testresults: Testresults to wrap
     :param title: Title of the feedback
     :return:
     """
@@ -76,11 +79,11 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
 
 def markdown_out(results: dict) -> str:
     """
-    creates a markdown table from the results
+    creates a Markdown table from the results
     :param results:
     :return:
     """
-    #if results is empty return string
+    # if results is empty return string
     if not results:
         return ''
 
@@ -98,6 +101,7 @@ def markdown_out(results: dict) -> str:
         table += '| ' + ' | '.join(row) + ' |\n'
 
     return table
+
 
 def update_moodle(
         result: dict,

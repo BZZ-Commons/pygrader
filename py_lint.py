@@ -30,7 +30,6 @@ def py_lint():
         # Ensure the list is unique
         pylint_opts.extend(list(set(python_files)))
 
-    print(pylint_opts)
     reporter = CollectingReporter()
     pylint_obj = lint.Run(pylint_opts, reporter=reporter, exit=False)
     results = {
@@ -59,12 +58,12 @@ def py_lint():
 
 
 def load_config() -> dict:
-    FILE_LINT = os.environ['FILE_LINT']
+    file_lint = os.environ['FILE_LINT']
     try:
-        with open(f'./.github/autograding/{FILE_LINT}', encoding='UTF-8') as file:
+        with open(f'./.github/autograding/{file_lint}', encoding='UTF-8') as file:
             params = json.load(file)
     except IOError as ex:
-        print(f'file {FILE_LINT} not found')
+        print(f'file {file_lint} not found')
     return params
 
 
