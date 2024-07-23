@@ -27,6 +27,10 @@ def py_lint():
         'max': 10,
         'feedback': []
     }
+    max = load_config().get('max')
+    if max:
+        results['max'] = max
+
     for message in reporter.messages:
         output = {
             'category': message.category,
@@ -36,7 +40,8 @@ def py_lint():
         }
         results['feedback'].append(output)
 
-    results['points'] = pylint_obj.linter.stats.global_note
+    # Scale the points to the max points
+    results['points'] = pylint_obj.linter.stats.global_note/10 * results['max']
     print(results)
     return results
 
