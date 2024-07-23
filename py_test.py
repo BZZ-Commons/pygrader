@@ -7,6 +7,7 @@ from io import StringIO
 import pytest
 from _pytest.config import ExitCode
 
+
 def py_test():
     cases_list = load_cases()
     results = {
@@ -29,6 +30,7 @@ def py_test():
         }
         args[1] = case.function
         with Capturing() as output:
+            #exitcode = pytest.main(args,plugins=["py_test"])
             exitcode = pytest.main(args)
         if exitcode == ExitCode.OK:
             summary = output[len(output) - 1]
@@ -42,10 +44,9 @@ def py_test():
                 result['feedback'] = 'Test was skipped at this time'
         elif exitcode == ExitCode.TESTS_FAILED:
             extract_assertion(output, result)
-            print('assert fail')
         else:
             result['feedback'] = 'Unknown error, check GitHub Actions for details'
-            print('Fail')
+            print('Failed to get ExitCode.OK or ExitCode.TESTS_FAILED')
 
         total_points += result['points']
         total_max += result['max']
@@ -58,11 +59,20 @@ def py_test():
 
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
-        #print(index,line)
+        print(index,line)
+        """
         if 'AssertionError' in line:
             result['feedback'] = 'Assertion Error'
             result['expected'] = str.split(message[index - 2],':' ,1)[1].strip()
             result['actual'] = str.split(message[index - 3],':' ,1)[1].strip()
+            break
+        """
+        if 'AssertionError' in line:
+            result['feedback'] = 'Assertion Error'
+            expected_value = float(str.split(message[index - 2], ':', 1)[1].strip())
+            actual_value = float(str.split(message[index - 3], ':', 1)[1].strip())
+            result['expected'] = f'{expected_value:.2f}'
+            result['actual'] = f'{actual_value:.2f}'
             break
 
 
@@ -116,6 +126,33 @@ class Capturing(list):
         self.extend(self._stringio.getvalue().splitlines())
         del self._stringio  # free up some memory
         sys.stdout = self._stdout
+
+
+def pytest_exception_interact(node, call, report):
+    '''
+    Diese Funktion wird aufgerufen, wenn ein Testfall fehlschlägt.
+    '''
+    print("\n\nSTART EXCEPTION INTERACT")
+    exception = {
+        'function': "",
+        'call': "",
+        'report': ""
+    }
+
+    if report.failed:
+        print(str(call.excinfo.value))
+        print(node.nodeid)
+        # Extrahiere den fehlerhaften Code und den Testfall
+        fehlerhafter_code = str(call.excinfo.value)
+        testfall = node.nodeid
+        exception['function'] = node.nodeid.split("::")[1]
+        print(exception['function'])
+        #print(str(call.excinfo.value))
+        testfall = node.nodeid
+
+        # Sende die Informationen an die API (Pseudocode)
+        #sende_zu_chatgpt_api(fehlerhafter_code, testfall)
+    print("END EXCEPTION INTERACT\n\n")
 
 if __name__ == '__main__':
     pass

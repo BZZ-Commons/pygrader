@@ -14,21 +14,18 @@ def main():
     USERNAME = os.environ['USERNAME']
     SERVER = os.environ['SERVER']
     REPOPATH = os.environ['REPO']
-    FILE_UNITTESTS = os.environ['FILE_UNITTESTS']
-    FILE_LINT = os.environ['FILE_LINT']
 
     print(
         f'TARGET_URL={TARGET_URL}, TOKEN={TOKEN}, FUNCTION={FUNCTION}, USERNAME={USERNAME}, SERVER={SERVER}, REPO={REPOPATH}')
     repository = REPOPATH.split('/')[1]
     assignment = repository.removesuffix('-' + USERNAME)
-    print(f'assignment={assignment}')
 
     result = collect_results()
     update_moodle(
         result=result,
         target_url='https://moodle.it.bzz.ch/moodle',
         token=TOKEN,
-        function='mod_assignexternal_update_grade',
+        function=FUNCTION,
         user_name=USERNAME,
         assignment=assignment,
         external_link=f'{SERVER}/{REPOPATH}'
@@ -46,43 +43,61 @@ def collect_results() -> dict:
         'feedback': ''
     }
 
+    # Pytest
     testresults = py_test()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
-    result['feedback'] += '<h1>Unittests</h1>'
-    result['feedback'] += html_out(testresults['feedback'])
-    #print(testresults)
+    result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
+    # Pylint
     testresults = py_lint()
     result['points'] += testresults['points']
     result['max'] += testresults['max']
-    result['feedback'] += '<h1>Linting</h1>'
-    result['feedback'] += html_out(testresults['feedback'])
+    result['feedback'] += wrap_feedback_table(testresults, 'Linting')
 
+    result['points'] = round(result['points'], 2)
     return result
 
-
-def html_out(results: dict) -> str:
+def wrap_feedback_table(testresults: dict, title: str) -> str:
     """
-    creates a html table from the results
+    Adds a title to the feedback table and a total for the points
+    :param feedback: Feedback table
+    :param title: Title of the feedback
+    :return:
+    """
+
+    feedback = f'#{title}'
+    feedback += '\n'
+    feedback += markdown_out(testresults['feedback'])
+    feedback += '\n'
+    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkte**'
+    feedback += '\n***\n'
+    return feedback
+
+
+def markdown_out(results: dict) -> str:
+    """
+    creates a markdown table from the results
     :param results:
     :return:
     """
-    first_line = True
-    output = '<table>'
-    thead = '<tr>'
-    for result in results:
-        row = '<tr>'
-        for key, value in result.items():
-            if first_line:
-                thead += f'<th>{key}</th>'
-            row += f'<td>{value}</td>'
-        if first_line:
-            output += f'{thead}</tr>'
-            first_line = False
-        output += f'{row}</tr>'
-    output += '</table>'
-    return output
+    #if results is empty return string
+    if not results:
+        return ''
 
+    # Extract headers
+    headers = list(results[0].keys())
+
+    # Start the table with headers
+
+    table = '| ' + ' | '.join(headers) + ' |\n'
+    table += '| ' + ' | '.join(['---'] * len(headers)) + ' |\n'
+
+    # Add the rows
+    for entry in results:
+        row = [str(entry[header]) for header in headers]
+        table += '| ' + ' | '.join(row) + ' |\n'
+
+    return table
 
 def update_moodle(
         result: dict,
@@ -114,11 +129,11 @@ def update_moodle(
         'externallink': external_link,
         'feedback': feedback
     }
-    #print(url)
-    #print(payload)
+    print(url)
+    print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
-    #print(response)
-    #print(response.text)
+    print(response)
+    print(response.text)
 
 
 if __name__ == '__main__':
