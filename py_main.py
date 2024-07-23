@@ -82,6 +82,9 @@ def markdown_out(results: dict) -> str:
     :param results:
     :return:
     """
+    #if results is empty return empty table
+    if not results:
+        return ''
 
     # Extract headers
     headers = list(results[0].keys())
