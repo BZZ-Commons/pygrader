@@ -67,11 +67,12 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
     :return:
     """
 
-    feedback = f'#{title}  '
+    feedback = f'#{title}'
+    feedback += '\n'
     feedback += markdown_out(testresults['feedback'])
-    feedback += '  '
-    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkte**  '
-    feedback += '***  '
+    feedback += '\n'
+    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkte**'
+    feedback += '\n***\n'
     return feedback
 
 
@@ -81,7 +82,7 @@ def markdown_out(results: dict) -> str:
     :param results:
     :return:
     """
-    #if results is empty return empty table
+    #if results is empty return string
     if not results:
         return ''
 
