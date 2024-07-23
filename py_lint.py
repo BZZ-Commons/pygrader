@@ -4,19 +4,32 @@ from pylint.reporters import CollectingReporter
 import os
 import json
 import glob
-
+import re
 def py_lint():
     pylint_opts = [
         '--rcfile=.github/autograding/pylintrc',
     ]
 
-    # Add files from config file or all python files in the directory
-    files = load_config().get('files')
+    config = load_config()
+
+    #
+    files = config.get('files')
     if files:
         pylint_opts.extend(files)
     else:
-        python_files = glob.glob('./*.py')
-        pylint_opts.extend(python_files)
+        python_files = glob.glob('./*.py', recursive=True)
+        ignore_patterns = config.get('ignore')
+        if ignore_patterns:
+            # Remove ignored files from the list, ignore_patterns is a list of Regex patterns
+            for pattern in ignore_patterns:
+                regex = re.compile(pattern)
+                python_files = [f for f in python_files if not regex.match(f)]
+        else:
+            # If no files to ignore, include all Python files
+            python_files = glob.glob('./*.py', recursive=True)
+
+        # Ensure the list is unique
+        pylint_opts.extend(list(set(python_files)))
 
     print(pylint_opts)
     reporter = CollectingReporter()
