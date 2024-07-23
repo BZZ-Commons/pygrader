@@ -14,8 +14,6 @@ def main():
     USERNAME = os.environ['USERNAME']
     SERVER = os.environ['SERVER']
     REPOPATH = os.environ['REPO']
-    FILE_UNITTESTS = os.environ['FILE_UNITTESTS']
-    FILE_LINT = os.environ['FILE_LINT']
 
     print(
         f'TARGET_URL={TARGET_URL}, TOKEN={TOKEN}, FUNCTION={FUNCTION}, USERNAME={USERNAME}, SERVER={SERVER}, REPO={REPOPATH}')
