@@ -30,7 +30,8 @@ def py_test():
         }
         args[1] = case.function
         with Capturing() as output:
-            exitcode = pytest.main(args,plugins=["py_test"])
+            #exitcode = pytest.main(args,plugins=["py_test"])
+            exitcode = pytest.main(args)
         if exitcode == ExitCode.OK:
             summary = output[len(output) - 1]
             if 'passed' in summary:
@@ -45,7 +46,7 @@ def py_test():
             extract_assertion(output, result)
         else:
             result['feedback'] = 'Unknown error, check GitHub Actions for details'
-            print('Fail')
+            print('Failed to get ExitCode.OK or ExitCode.TESTS_FAILED')
 
         total_points += result['points']
         total_max += result['max']
@@ -122,7 +123,7 @@ def pytest_exception_interactt(node, call, report):
     '''
     Diese Funktion wird aufgerufen, wenn ein Testfall fehlschlägt.
     '''
-    print("AAAAAAAAa")
+    print("\n\nSTART EXCEPTION INTERACT")
     exception = {
         'function': "",
         'call': "",
@@ -130,18 +131,19 @@ def pytest_exception_interactt(node, call, report):
     }
 
     if report.failed:
-        print("########################"+str(call.excinfo.value))
-        print("########################"+node.nodeid)
+        print(str(call.excinfo.value))
+        print(node.nodeid)
         # Extrahiere den fehlerhaften Code und den Testfall
         fehlerhafter_code = str(call.excinfo.value)
         testfall = node.nodeid
         exception['function'] = node.nodeid.split("::")[1]
-        print("AAAAAAAA" + exception['function'])
+        print(exception['function'])
         #print(str(call.excinfo.value))
         testfall = node.nodeid
 
         # Sende die Informationen an die API (Pseudocode)
         #sende_zu_chatgpt_api(fehlerhafter_code, testfall)
+    print("END EXCEPTION INTERACT\n\n")
 
 if __name__ == '__main__':
     pass
