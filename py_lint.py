@@ -12,21 +12,20 @@ def py_lint():
 
     config = load_config()
 
-    #
+    # If files are specified in the config, use only them
     files = config.get('files')
     if files:
         pylint_opts.extend(files)
+
+    # Otherwise, use all Python files in the directory, except the ones specified in the ignore list
     else:
-        python_files = glob.glob('./*.py', recursive=True)
+        python_files = glob.glob('*.py', recursive=True)
+
         ignore_patterns = config.get('ignore')
         if ignore_patterns:
-            # Remove ignored files from the list, ignore_patterns is a list of Regex patterns
             for pattern in ignore_patterns:
                 regex = re.compile(pattern)
                 python_files = [f for f in python_files if not regex.match(f)]
-        else:
-            # If no files to ignore, include all Python files
-            python_files = glob.glob('./*.py', recursive=True)
 
         # Ensure the list is unique
         pylint_opts.extend(list(set(python_files)))
