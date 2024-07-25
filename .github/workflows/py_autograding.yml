@@ -3,7 +3,6 @@ name: GitHub Classroom autograding and update moodle
 on:
   workflow_call:
   workflow_dispatch:
-  push:
 
 env:
   DEVOPS_DIR: devops
