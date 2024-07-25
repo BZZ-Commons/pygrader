@@ -60,10 +60,10 @@ def py_test():
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
         print(index, line)
-        if 'AssertionError' in line:
+        if 'Comparing values:' in line:
             result['feedback'] = 'Assertion Error'
-            result['expected'] = str.split(message[index - 2],':' ,1)[1].strip()
-            result['actual'] = str.split(message[index - 3],':' ,1)[1].strip()
+            result['expected'] = message[index + 1].split(':', 1)[1].strip()
+            result['actual'] = message[index + 2].split(':', 1)[1].strip()
             break
 
 def load_cases() -> list:
@@ -116,6 +116,8 @@ class Capturing(list):
         self.extend(self._stringio.getvalue().splitlines())
         del self._stringio  # free up some memory
         sys.stdout = self._stdout
+
+
 
 
 if __name__ == '__main__':
