@@ -1,3 +1,5 @@
+""" Main script for grading assignments"""
+
 import os
 import urllib.parse
 
