@@ -21,7 +21,7 @@ Usage:
 
 def pytest_assertrepr_compare(op, left, right):
     return [
-        "XXXXComparing values:XXXX",
+        "Comparing values:",
         f"   expected: {right}",
         f"   actual  : {left}",
     ]

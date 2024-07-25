@@ -30,7 +30,10 @@ def py_test():
         }
         args[1] = case.function
         with Capturing() as output:
-            #exitcode = pytest.main(args,plugins=["py_test"])
+            print('\n\n')
+            print('################################################################################')
+            print(f'Running test: {case.name}')
+            print('################################################################################')
             exitcode = pytest.main(args)
         if exitcode == ExitCode.OK:
             summary = output[len(output) - 1]
@@ -64,7 +67,10 @@ def extract_assertion(message, result) -> None:
         if 'Comparing values:' in line:
             result['feedback'] = 'Assertion Error'
             result['expected'] = message[index + 1].split(':', 1)[1].strip()
+            print(f'Expected : {result["expected"]}')
             result['actual'] = message[index + 2].split(':', 1)[1].strip()
+            print(f'Actual : {result["actual"]}')
+
             break
 
 def load_cases() -> list:

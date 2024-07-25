@@ -6,6 +6,8 @@ import requests
 from py_lint import py_lint
 from py_test import py_test
 
+DEBUG = False
+
 
 def main():
     target_url = os.environ['TARGET_URL']
@@ -15,7 +17,7 @@ def main():
     server = os.environ['SERVER']
     repopath = os.environ['REPO']
 
-    print(
+    if DEBUG: print(
         f'TARGET_URL={target_url}, TOKEN={token}, FUNCTION={function}, '
         f'USERNAME={username}, SERVER={server}, REPO={repopath}')
 
@@ -133,11 +135,11 @@ def update_moodle(
         'externallink': external_link,
         'feedback': feedback
     }
-    print(url)
-    print(payload)
+    if DEBUG: print(url)
+    if DEBUG: print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
-    print(response)
-    print(response.text)
+    if DEBUG: print(response)
+    if DEBUG: print(response.text)
 
 
 if __name__ == '__main__':

@@ -1,3 +1,20 @@
+""" This script is used to lint Python files using pylint. It uses the configuration file
+    .github/autograding/pylint.json to specify the files to be linted and the maximum points.
+    The script returns a dictionary with the following keys
+    - category: The category of the test
+    - points: The points obtained
+    - max: The maximum points
+    - feedback: A list of feedback messages
+    Each feedback message is a dictionary with the following keys
+    - category: The category of the message
+    - message: The message
+    - path: The path to the file
+    - line: The line number
+    The points are calculated as follows:
+    - The total points are calculated by dividing the global note by 10
+    - The points are scaled to the maximum points specified in the configuration file
+"""
+
 from pylint import lint
 from pylint.reporters import CollectingReporter
 
@@ -5,6 +22,10 @@ import os
 import json
 import glob
 import re
+
+DEBUG = False
+
+
 def py_lint():
     pylint_opts = [
         '--rcfile=.github/autograding/pylintrc',
@@ -38,9 +59,9 @@ def py_lint():
         'max': 10,
         'feedback': []
     }
-    max = load_config().get('max')
-    if max:
-        results['max'] = max
+    max_value = load_config().get('max')
+    if max_value:
+        results['max'] = max_value
 
     for message in reporter.messages:
         output = {
@@ -53,7 +74,7 @@ def py_lint():
 
     # Scale the points to the max points
     results['points'] = pylint_obj.linter.stats.global_note/10 * results['max']
-    print(results)
+    if DEBUG: print(results)
     return results
 
 
@@ -62,7 +83,7 @@ def load_config() -> dict:
     try:
         with open(f'./.github/autograding/{file_lint}', encoding='UTF-8') as file:
             params = json.load(file)
-    except IOError as ex:
+    except IOError:
         print(f'file {file_lint} not found')
     return params
 
