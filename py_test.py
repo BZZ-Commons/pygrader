@@ -43,6 +43,7 @@ def py_test():
             elif 'skipped' in summary:
                 result['feedback'] = 'Test was skipped at this time'
         elif exitcode == ExitCode.TESTS_FAILED:
+            result['feedback'] = 'Test failed, check GitHub Actions for details'
             extract_assertion(output, result)
         else:
             result['feedback'] = 'Unknown error, check GitHub Actions for details'
