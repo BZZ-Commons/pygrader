@@ -36,6 +36,9 @@ jobs:
           path: autograde
           ref: main
 
+      - name: Copy conftest.py to student repo
+        run: cp ./autograde/conftest.py ./conftest.py
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -48,8 +51,5 @@ jobs:
           if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
           if [ -f ./autograde/requirements.txt ]; then pip3 install -r ./autograde/requirements.txt; fi
 
-      - name: Copy conftest.py to student repo
-        run: cp ./autograde/conftest.py ./conftest.py
-
-      - name: Execute python script
+      - name: Run Tests and Upload to Moodle
         run: python3 ./autograde/py_main.py
