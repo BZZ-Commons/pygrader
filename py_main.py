@@ -25,7 +25,7 @@ def main():
     result = collect_results()
     update_moodle(
         result=result,
-        target_url='https://moodle.it.bzz.ch/moodle',
+        target_url=target_url,
         token=token,
         function=function,
         user_name=username,
