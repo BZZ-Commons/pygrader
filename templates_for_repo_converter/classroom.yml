@@ -1,0 +1,25 @@
+name: Workflow for BZZ Programming Lessons using Github-Classroom and Moodle
+
+on: push
+
+permissions:
+  checks: write
+  issues: write
+  actions: read
+  contents: read
+
+jobs:
+  copy-issues:
+    if: ${{ contains(github.actor, 'classroom') }}
+    uses: BZZ-Commons/workflows/.github/workflows/setup.yml@main
+    with:
+      SOURCE_REPO: templates-python/m319_lu04_a00_classroom  # CHANGE owner/name of the repo with the issues
+      TARGET_REPO: ${{ github.repository }}
+      ADD_LABELS: "false"
+    secrets:
+      GHSECRET: ${{ secrets.GITHUB_TOKEN }}
+
+  grading:
+    if: ${{ !contains(github.actor, 'classroom') }}
+    uses: BZZ-Commons/pygrader/.github/workflows/py_autograding.yml@main
+    secrets: inherit

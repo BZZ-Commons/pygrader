@@ -1,0 +1,40 @@
+name: Copy Issues from another repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_repo:
+        type: string
+        description: 'The repo to copy the issues from'
+        required: true
+      add_labels:
+        type: boolean
+        description: 'import labels'
+        required: true
+
+env:
+  DEVOPS_DIR: devops
+  GHSECRET: ${{ secrets.GITHUB_TOKEN }}
+  TARGET_REPO: ${{ github.repository }}
+  SOURCE_REPO: ${{ inputs.source_repo }}
+  SCRIPT_REPO: BZZ-Commons/copy-issues
+  ADD_LABELS: ${{ inputs.add_labels }}
+
+jobs:
+  copy-issues:
+    name: CopyIssues
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyGithub
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Check-out the IssueCopy Repo
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ env.SCRIPT_REPO }}
+        path: ${{ env.DEVOPS_DIR }}
+    - name: Copy the Issues
+      run: python ${{ env.DEVOPS_DIR }}/issues.py
+      shell: sh
