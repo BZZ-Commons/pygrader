@@ -61,6 +61,10 @@ def collect_results() -> dict:
     result['feedback'] += wrap_feedback_table(testresults, 'Linting')
 
     result['points'] = round(result['points'], 2)
+
+    if DEBUG: print('######### FEEDBACK TABLES ######### ')
+    if DEBUG: print(result['feedback'])
+
     return result
 
 
@@ -78,7 +82,7 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
     feedback += '\n'
     feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkten ({(testresults["points"]/testresults["max"])*100:.2f}%)**'
     feedback += '\n***\n'
-    if DEBUG: print(feedback)
+
     return feedback
 
 
@@ -138,6 +142,7 @@ def update_moodle(
         'externallink': external_link,
         'feedback': feedback
     }
+    if DEBUG: print('######### UPLOAD TO MOODLE ######### ')
     if DEBUG: print(url)
     if DEBUG: print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
