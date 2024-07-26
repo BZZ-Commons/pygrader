@@ -18,7 +18,6 @@ def main():
     username = os.environ['USERNAME']
     server = os.environ['SERVER']
     repo_path = os.environ['REPO']
-
     if DEBUG: print(
         f'TARGET_URL={target_url}, TOKEN={token}, FUNCTION={function}, '
         f'USERNAME={username}, SERVER={server}, REPO={repo_path}')
@@ -59,6 +58,8 @@ def collect_results() -> dict:
     result['points'] += testresults['points']
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Linting')
+    # Add a linkt to the repository
+    result['feedback'] += f'URL zum Repository: [{os.environ["REPO"]}]({os.environ["SERVER"]}/{os.environ["REPO"]})'
 
     result['points'] = round(result['points'], 2)
 
