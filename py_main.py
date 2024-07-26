@@ -8,7 +8,7 @@ import requests
 from py_lint import py_lint
 from py_test import py_test
 
-DEBUG = False
+DEBUG = True
 
 
 def main():
@@ -17,13 +17,13 @@ def main():
     function = os.environ['FUNCTION']
     username = os.environ['USERNAME']
     server = os.environ['SERVER']
-    repopath = os.environ['REPO']
+    repo_path = os.environ['REPO']
 
     if DEBUG: print(
         f'TARGET_URL={target_url}, TOKEN={token}, FUNCTION={function}, '
-        f'USERNAME={username}, SERVER={server}, REPO={repopath}')
+        f'USERNAME={username}, SERVER={server}, REPO={repo_path}')
 
-    repository = repopath.split('/')[1]
+    repository = repo_path.split('/')[1]
     assignment = repository.removesuffix('-' + username)
 
     result = collect_results()
@@ -34,7 +34,7 @@ def main():
         function=function,
         user_name=username,
         assignment=assignment,
-        external_link=f'{server}/{repopath}'
+        external_link=f'{server}/{repo_path}'
     )
 
 
@@ -76,8 +76,9 @@ def wrap_feedback_table(testresults: dict, title: str) -> str:
     feedback += '\n'
     feedback += markdown_out(testresults['feedback'])
     feedback += '\n'
-    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkte**'
+    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkten ({(testresults["points"]/testresults["max"])*100:.2f}%)**'
     feedback += '\n***\n'
+    if DEBUG: print(feedback)
     return feedback
 
 
