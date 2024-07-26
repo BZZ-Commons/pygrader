@@ -59,7 +59,7 @@ def collect_results() -> dict:
     result['max'] += testresults['max']
     result['feedback'] += wrap_feedback_table(testresults, 'Linting')
     # Add a linkt to the repository
-    result['feedback'] += f'URL zum Repository: [{os.environ["REPO"]}]({os.environ["SERVER"]}/{os.environ["REPO"]})'
+    result['feedback'] += f'Link zum Repository: [{os.environ["REPO"]}]({os.environ["SERVER"]}/{os.environ["REPO"]})'
 
     result['points'] = round(result['points'], 2)
 
