@@ -47,6 +47,6 @@ if __name__ == '__main__':
     if repos:
         print('Found repositories:')
         for repo in repos:
-            print(repo)
+            print(f"\"{repo}\",")
     else:
         print('No repositories found')
