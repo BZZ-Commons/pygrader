@@ -40,7 +40,7 @@ def get_repos(org_name, keyword):
 
 if __name__ == '__main__':
     load_dotenv()
-    org_name = 'BZZ-M323'
+    org_name = 'templates-python'
     keyword = 'm323'
     repos = get_repos(org_name, keyword)
 
