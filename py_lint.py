@@ -63,6 +63,8 @@ def py_lint():
     if max_value:
         results['max'] = max_value
 
+
+
     for message in reporter.messages:
         output = {
             'category': message.category,
@@ -72,8 +74,11 @@ def py_lint():
         }
         results['feedback'].append(output)
 
-    # Scale the points to the max points
-    results['points'] = pylint_obj.linter.stats.global_note/10 * results['max']
+    # Scale the points to the max points, and ensure it is not negative
+    results['points'] = round(pylint_obj.linter.stats.global_note/10 * results['max'],2)
+    if results['points'] < 0:
+        results['points'] = 0
+
     if DEBUG: print(results)
     return results
 
