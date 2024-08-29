@@ -162,8 +162,7 @@ def update_moodle(
 
     # Check if the value of the 'name' key is not 'success'
     if name_key is None or name_key.text != 'success':
-        print('Error: Moodle upload failed')
-        sys.exit(1)
+        raise Exception('Error: Moodle upload failed')
 
 
 
