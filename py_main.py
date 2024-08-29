@@ -154,14 +154,12 @@ def update_moodle(
     if DEBUG: print(response)
     if DEBUG: print(response.text)
 
-    # Parse the XML
+    # Check if Upload was successfully
     root = ET.fromstring(response.text)
-
-    # Find the 'KEY' element with attribute name="name"
     name_key = root.find(".//KEY[@name='name']/VALUE")
-
-    # Check if the value of the 'name' key is not 'success'
     if name_key is None or name_key.text != 'success':
+        print('Error: Moodle upload failed')
+        print(response.text)
         raise Exception('Error: Moodle upload failed')
 
 
