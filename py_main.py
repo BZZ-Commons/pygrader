@@ -1,12 +1,16 @@
 """ Main script for grading assignments"""
 
 import os
+import sys
 import urllib.parse
 
 import requests
 
 from py_lint import py_lint
 from py_test import py_test
+
+import xml.etree.ElementTree as ET
+
 
 DEBUG = True
 
@@ -149,6 +153,18 @@ def update_moodle(
     response = requests.post(url=url, data=payload, timeout=30)
     if DEBUG: print(response)
     if DEBUG: print(response.text)
+
+    # Parse the XML
+    root = ET.fromstring(response.text)
+
+    # Find the 'KEY' element with attribute name="name"
+    name_key = root.find(".//KEY[@name='name']/VALUE")
+
+    # Check if the value of the 'name' key is not 'success'
+    if name_key is None or name_key.text != 'success':
+        print('Error: Moodle upload failed')
+        sys.exit(1)
+
 
 
 if __name__ == '__main__':
