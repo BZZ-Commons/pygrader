@@ -12,7 +12,7 @@ from py_test import py_test
 import xml.etree.ElementTree as ET
 
 
-DEBUG = True
+DEBUG = False
 
 
 def main():
