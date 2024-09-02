@@ -147,7 +147,10 @@ def update_moodle(
         'externallink': external_link,
         'feedback': feedback
     }
-    if DEBUG: print('######### UPLOAD TO MOODLE ######### ')
+    print('\n\n')
+    print('################################################################################')
+    print('UPLOAD TO MOODLE')
+    print('################################################################################')
     if DEBUG: print(url)
     if DEBUG: print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
@@ -175,8 +178,10 @@ def update_moodle(
                 # Extract the message from <KEY name="message">
                 message_key = root.find(".//KEY[@name='message']/VALUE")
                 if message_key is not None:
+                    print("Upload to Moodle failed.")
                     print(f"Error message: {message_key.text}")
                 else:
+                    print("Upload to Moodle failed.")
                     print("Error: No message found.")
                 sys.exit(1)
 
