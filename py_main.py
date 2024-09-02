@@ -164,23 +164,28 @@ def update_moodle(
         xml_content = response.text[xml_start:]
         try:
             root = ET.fromstring(xml_content)
+
+            # Extract the value of the 'name' key
+            name_key = root.find(".//KEY[@name='name']/VALUE")
+
+            # Check if the value of the 'name' key is 'success'
+            if name_key is not None and name_key.text == 'success':
+                print("Upload to Moodle successful.")
+            else:
+                # Extract the message from <KEY name="message">
+                message_key = root.find(".//KEY[@name='message']/VALUE")
+                if message_key is not None:
+                    print(f"Error message: {message_key.text}")
+                else:
+                    print("Error: No message found.")
+                sys.exit(1)
+
         except ET.ParseError as e:
             print(f"Failed to parse XML: {e}")
             sys.exit(1)
     else:
         print("No valid XML found in the response.")
         sys.exit(1)
-
-    # Further processing with the parsed XML
-    name_key = root.find(".//KEY[@name='name']/VALUE")
-
-    # Check if the value of the 'name' key is not 'success'
-    if name_key is None or name_key.text != 'success':
-        print("Error: Upload to Moodle failed.")
-        print(name_key.text)
-        sys.exit(1)
-    else:
-        print("Upload to Moodle successful.")
 
 
 if __name__ == '__main__':
