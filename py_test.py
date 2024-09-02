@@ -41,8 +41,8 @@ def py_test():
     }
     total_points = 0
     total_max = 0
-    args = ['-k', '','--disable-warnings'] #--disable-warnings is used to suppress warnings from py_test.py
-    for case in cases_list:
+    args = ['-k', '','--disable-warnings', ''] #--disable-warnings is used to suppress warnings from py_test.py
+    for casenum, case in enumerate(cases_list):
         result = {
             'name': case.name,
             'feedback': '',
@@ -55,16 +55,18 @@ def py_test():
         with Capturing() as output:
             print('\n\n')
             print('################################################################################')
-            print(f'Running test: {case.name}')
+            print(f'Running test: {case.name} {casenum + 1}/{len(cases_list)}')
             print('################################################################################')
             exitcode = pytest.main(args)
-        for index, line in enumerate(output):
-            print(line)
         if exitcode == ExitCode.OK:
             summary = output[len(output) - 1]
             if 'passed' in summary:
                 result['feedback'] = 'Success'
                 result['points'] = case.points
+                for index, line in enumerate(output):
+                    if index == 4:
+                        line = '✅  ' + line
+                    print(f"{bcolors.OKGREEN}{line}{bcolors.ENDC}")
             elif 'xfailed' in summary:
                 result['feedback'] = 'Success: Fails as expected'
                 result['points'] = case.points
@@ -87,13 +89,15 @@ def py_test():
 
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
-        #print(line)
+        if index == 4:
+            line = '❌  ' + line
+        print(f"{bcolors.FAIL}{line}{bcolors.ENDC}")
         if 'Comparing values:' in line:
             result['feedback'] = 'Assertion Error'
             result['expected'] = message[index + 1].split(':', 1)[1].strip()
-            print(f'Expected : {result["expected"]}')
+            print(f'{bcolors.FAIL}Expected : {result["expected"]}{bcolors.ENDC}')
             result['actual'] = message[index + 2].split(':', 1)[1].strip()
-            print(f'Actual : {result["actual"]}')
+            print(f'{bcolors.FAIL}Actual : {result["actual"]}{bcolors.ENDC}')
 
             break
 
@@ -148,7 +152,16 @@ class Capturing(list):
         del self._stringio  # free up some memory
         sys.stdout = self._stdout
 
-
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 
 if __name__ == '__main__':
