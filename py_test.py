@@ -101,7 +101,7 @@ def extract_assertion(message, result) -> None:
             print(f'\t\t\t{bcolors.FAIL}Expected : {result["expected"]}{bcolors.ENDC}')
             result['actual'] = message[index + 2].split(':', 1)[1].strip()
             print(f'\t\t\t{bcolors.FAIL}Actual : {result["actual"]}{bcolors.ENDC}')
-
+            print('\n\n')
             break
 
 def load_cases() -> list:
