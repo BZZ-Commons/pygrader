@@ -41,7 +41,7 @@ def py_test():
     }
     total_points = 0
     total_max = 0
-    args = ['-k', '']
+    args = ['-k', '','--disable-warnings'] #--disable-warnings is used to suppress warnings from py_test.py
     for case in cases_list:
         result = {
             'name': case.name,
