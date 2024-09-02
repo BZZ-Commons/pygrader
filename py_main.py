@@ -148,9 +148,9 @@ def update_moodle(
         'feedback': feedback
     }
     print('\n\n')
-    print('################################################################################')
-    print('UPLOAD TO MOODLE')
-    print('################################################################################')
+    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(f'{bcolors.HEADER}UPLOAD TO MOODLE{bcolors.ENDC}')
+    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     if DEBUG: print(url)
     if DEBUG: print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
@@ -173,16 +173,16 @@ def update_moodle(
 
             # Check if the value of the 'name' key is 'success'
             if name_key is not None and name_key.text == 'success':
-                print("Upload to Moodle successful.")
+                print(f"{bcolors.OKGREEN}Upload to Moodle successful.{bcolors.ENDC}")
             else:
                 # Extract the message from <KEY name="message">
                 message_key = root.find(".//KEY[@name='message']/VALUE")
                 if message_key is not None:
-                    print("Upload to Moodle failed.")
-                    print(f"Error message: {message_key.text}")
+                    print(f"{bcolors.FAIL}Upload to Moodle failed.{bcolors.ENDC}")
+                    print(f"{bcolors.FAIL}Error message: {message_key.text}{bcolors.ENDC}")
                 else:
-                    print("Upload to Moodle failed.")
-                    print("Error: No message found.")
+                    print(f"{bcolors.FAIL}Upload to Moodle failed.{bcolors.ENDC}")
+                    print(f"{bcolors.FAIL}Error: No message found.{bcolors.ENDC}")
                 sys.exit(1)
 
         except ET.ParseError as e:
@@ -192,6 +192,17 @@ def update_moodle(
         print("No valid XML found in the response.")
         sys.exit(1)
 
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 if __name__ == '__main__':
     from dotenv import load_dotenv
