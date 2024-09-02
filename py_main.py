@@ -151,18 +151,36 @@ def update_moodle(
     if DEBUG: print(url)
     if DEBUG: print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
-    if DEBUG: print(response)
+    if DEBUG: print(response,)
     if DEBUG: print("")
     if DEBUG: print(response.text)
 
-    # Check if Upload was successfully
-    root = ET.fromstring(response.text)
-    name_key = root.find(".//KEY[@name='name']/VALUE")
-    if name_key is None or name_key.text != 'success':
-        print('Error: Moodle upload failed')
-        print(response.text)
-        raise Exception('Error: Moodle upload failed')
+    # Check if Upload was successful
+    # response.text is not just XML, it may contain other content
+    xml_start = response.text.find('<?xml')
 
+    # If an XML declaration is found, parse from that point
+    if xml_start != -1:
+        xml_content = response.text[xml_start:]
+        try:
+            root = ET.fromstring(xml_content)
+        except ET.ParseError as e:
+            print(f"Failed to parse XML: {e}")
+            sys.exit(1)
+    else:
+        print("No valid XML found in the response.")
+        sys.exit(1)
+
+    # Further processing with the parsed XML
+    name_key = root.find(".//KEY[@name='name']/VALUE")
+
+    # Check if the value of the 'name' key is not 'success'
+    if name_key is None or name_key.text != 'success':
+        print("Error: Upload to Moodle failed.")
+        print(name_key.text)
+        sys.exit(1)
+    else:
+        print("Upload to Moodle successful.")
 
 
 if __name__ == '__main__':
