@@ -152,6 +152,7 @@ def update_moodle(
     if DEBUG: print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
     if DEBUG: print(response)
+    if DEBUG: print("")
     if DEBUG: print(response.text)
 
     # Check if Upload was successfully
