@@ -58,6 +58,8 @@ def py_test():
             print(f'Running test: {case.name}')
             print('################################################################################')
             exitcode = pytest.main(args)
+        for index, line in enumerate(output):
+            print(line)
         if exitcode == ExitCode.OK:
             summary = output[len(output) - 1]
             if 'passed' in summary:
@@ -80,13 +82,12 @@ def py_test():
         results['feedback'].append(result)
     results['points'] = total_points
     results['max'] = total_max
-
     return results
 
 
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
-        print(line)
+        #print(line)
         if 'Comparing values:' in line:
             result['feedback'] = 'Assertion Error'
             result['expected'] = message[index + 1].split(':', 1)[1].strip()
