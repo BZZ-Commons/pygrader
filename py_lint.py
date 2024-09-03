@@ -25,7 +25,7 @@ import json
 import glob
 import re
 
-DEBUG = True
+DEBUG = False
 
 
 def py_lint():
