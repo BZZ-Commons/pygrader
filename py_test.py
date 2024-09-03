@@ -43,7 +43,7 @@ def py_test():
     total_max = 0
     args = ['-k', '','--disable-warnings', '-q'] #--disable-warnings is used to suppress warnings from py_test.py
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.HEADER}Running {len(cases_list)} test cases{bcolors.ENDC}')
+    print(f'{bcolors.BOLD}{bcolors.HEADER}Running {len(cases_list)} test cases{bcolors.ENDC}')
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     passed_cases = 0
     for casenum, case in enumerate(cases_list):
@@ -70,7 +70,7 @@ def py_test():
                 result['points'] = case.points
                 for index, line in enumerate(output):
                     if index == 4:
-                        line = '✅  ' + line
+                        line = f'{bcolors.BOLD}✅  {line}{bcolors.ENDC}'
                     print(f"{bcolors.OKGREEN}{line}{bcolors.ENDC}")
             elif 'xfailed' in summary:
                 result['feedback'] = 'Success: Fails as expected'
@@ -105,8 +105,9 @@ def py_test():
 def extract_assertion(message, result) -> None:
     for index, line in enumerate(message):
         if index == 4:
-            line = '❌  ' + line
+            line = f'{bcolors.BOLD}❌  {line}{bcolors.ENDC}'
         print(f"{bcolors.FAIL}{line}{bcolors.ENDC}")
+
         if 'Comparing values:' in line:
             result['feedback'] = 'Assertion Error'
             result['expected'] = message[index + 1].split(':', 1)[1].strip()
