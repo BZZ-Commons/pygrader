@@ -45,7 +45,7 @@ def py_test():
     total_max = 0
     args = ['-k', '','--disable-warnings', '-q'] #--disable-warnings is used to suppress warnings from py_test.py
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.BOLD}{bcolors.HEADER}Running {len(cases_list)} test cases{bcolors.ENDC}')
+    print(f'{bcolors.BOLD}{bcolors.HEADER}Running {len(cases_list)} Tests{bcolors.ENDC}')
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     passed_cases = 0
     for casenum, case in enumerate(cases_list):
