@@ -30,6 +30,8 @@ from io import StringIO
 import pytest
 from _pytest.config import ExitCode
 
+from utils import bcolors
+
 
 def py_test():
     cases_list = load_cases()
@@ -167,17 +169,6 @@ class Capturing(list):
         self.extend(self._stringio.getvalue().splitlines())
         del self._stringio  # free up some memory
         sys.stdout = self._stdout
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 
 if __name__ == '__main__':

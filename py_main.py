@@ -8,6 +8,8 @@ import requests
 
 from py_lint import py_lint
 from py_test import py_test
+from utils import bcolors
+
 
 import xml.etree.ElementTree as ET
 
@@ -197,16 +199,7 @@ def update_moodle(
         sys.exit(1)
 
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+
 
 if __name__ == '__main__':
     from dotenv import load_dotenv
