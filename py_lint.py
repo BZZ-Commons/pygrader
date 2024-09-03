@@ -18,12 +18,14 @@
 from pylint import lint
 from pylint.reporters import CollectingReporter
 
+from utils import bcolors
+
 import os
 import json
 import glob
 import re
 
-DEBUG = False
+DEBUG = True
 
 
 def py_lint():
@@ -80,6 +82,9 @@ def py_lint():
         results['points'] = 0
 
     if DEBUG: print(results)
+
+    print_to_console(results, config)
+
     return results
 
 
@@ -91,6 +96,33 @@ def load_config() -> dict:
     except IOError:
         print(f'file {file_lint} not found')
     return params
+
+def print_to_console(results: dict, config: dict):
+    """
+    Print the results to the console
+    :param results: The results to print
+    """
+    print('\n\n')
+    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(f'{bcolors.BOLD}{bcolors.HEADER}Linting Files {config.get("files")} {bcolors.ENDC}')
+    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    for feedback in results['feedback']:
+        # Map each category to a specific color
+        if feedback['category'] == 'error':
+            color = bcolors.FAIL
+        elif feedback['category'] == 'warning':
+            color = bcolors.WARNING
+        elif feedback['category'] == 'refactor':
+            color = bcolors.OKBLUE
+        elif feedback['category'] == 'convention':
+            color = bcolors.OKCYAN
+        else:
+            color = bcolors.ENDC  # Default color
+
+        print(
+            f'{color}{feedback["category"]} in {feedback["path"]} line {feedback["line"]}: {feedback["message"]}{bcolors.ENDC}')
+
+    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Points: {results["points"]}/{results["max"]}{bcolors.ENDC}')
 
 
 if __name__ == '__main__':
