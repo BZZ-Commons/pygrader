@@ -154,7 +154,7 @@ def update_moodle(
     if DEBUG: print(url)
     if DEBUG: print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
-    if DEBUG: print(response,)
+    if DEBUG: print(response)
     if DEBUG: print("")
     if DEBUG: print(response.text)
 
@@ -175,14 +175,18 @@ def update_moodle(
             if name_key is not None and name_key.text == 'success':
                 print(f"{bcolors.OKGREEN}Upload to Moodle successful.{bcolors.ENDC}")
             else:
-                # Extract the message from <KEY name="message">
+                # Extract the message from <KEY name="message"> for Plugin errors
                 message_key = root.find(".//KEY[@name='message']/VALUE")
                 if message_key is not None:
                     print(f"{bcolors.FAIL}Upload to Moodle failed.{bcolors.ENDC}")
                     print(f"{bcolors.FAIL}Error message: {message_key.text}{bcolors.ENDC}")
-                else:
+
+                # Extract the message from <MESSAGE> for Moodle errors
+                message_key = root.find(".//MESSAGE")
+                if message_key is not None:
                     print(f"{bcolors.FAIL}Upload to Moodle failed.{bcolors.ENDC}")
-                    print(f"{bcolors.FAIL}Error: No message found.{bcolors.ENDC}")
+                    print(f"{bcolors.FAIL}Error: {message_key.text}{bcolors.ENDC}")
+
                 sys.exit(1)
 
         except ET.ParseError as e:

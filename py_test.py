@@ -45,6 +45,7 @@ def py_test():
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     print(f'{bcolors.HEADER}Running {len(cases_list)} test cases{bcolors.ENDC}')
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    passed_cases = 0
     for casenum, case in enumerate(cases_list):
         result = {
             'name': case.name,
@@ -62,6 +63,7 @@ def py_test():
             print('################################################################################')
             exitcode = pytest.main(args)
         if exitcode == ExitCode.OK:
+            passed_cases += 1
             summary = output[len(output) - 1]
             if 'passed' in summary:
                 result['feedback'] = 'Success'
@@ -73,20 +75,30 @@ def py_test():
             elif 'xfailed' in summary:
                 result['feedback'] = 'Success: Fails as expected'
                 result['points'] = case.points
+                for index, line in enumerate(output):
+                    if index == 4:
+                        line = '✅  ' + line
+                    print(f"{bcolors.OKGREEN}{line}{bcolors.ENDC}")
             elif 'skipped' in summary:
                 result['feedback'] = 'Test was skipped at this time'
+                for index, line in enumerate(output):
+                    if index == 4:
+                        line = '✅  ' + line
+                    print(f"{bcolors.OKGREEN}{line}{bcolors.ENDC}")
         elif exitcode == ExitCode.TESTS_FAILED:
             result['feedback'] = 'Test failed, check GitHub Actions for details'
             extract_assertion(output, result)
         else:
             result['feedback'] = 'Unknown error, check GitHub Actions for details'
-            print('Failed to get ExitCode.OK or ExitCode.TESTS_FAILED')
+            print(f"{bcolors.FAIL}{'Failed to get ExitCode.OK or ExitCode.TESTS_FAILED'}{bcolors.ENDC}")
 
         total_points += result['points']
         total_max += result['max']
         results['feedback'].append(result)
     results['points'] = total_points
     results['max'] = total_max
+
+    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Grand total tests passed: {passed_cases}/{len(cases_list)}{bcolors.ENDC}')
     return results
 
 
