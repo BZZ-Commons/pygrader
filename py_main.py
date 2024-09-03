@@ -153,7 +153,7 @@ def update_moodle(
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     print(f'{bcolors.HEADER}{bcolors.BOLD}UPLOAD TO MOODLE{bcolors.ENDC}')
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.OKCYAN}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}👤 User : \t\t{payload["user_name"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}🔗 Link : \t\t{payload["externallink"]}{bcolors.ENDC}')
