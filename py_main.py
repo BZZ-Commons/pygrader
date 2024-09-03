@@ -151,8 +151,17 @@ def update_moodle(
     }
     print('\n\n')
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.HEADER}UPLOAD TO MOODLE{bcolors.ENDC}')
+    print(f'{bcolors.HEADER}{bcolors.BOLD}UPLOAD TO MOODLE{bcolors.ENDC}')
     print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}👤 User : \t\t\t{payload["user_name"]}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}🔗 Link : \t\t\t{payload["externallink"]}{bcolors.ENDC}')
+
+
+
+
+
     if DEBUG: print(url)
     if DEBUG: print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
@@ -175,19 +184,19 @@ def update_moodle(
 
             # Check if the value of the 'name' key is 'success'
             if name_key is not None and name_key.text == 'success':
-                print(f"{bcolors.OKGREEN}Upload to Moodle successful.{bcolors.ENDC}")
+                print(f"{bcolors.OKGREEN}✅ Upload to Moodle successful.{bcolors.ENDC}")
             else:
                 # Extract the message from <KEY name="message"> for Plugin errors
                 message_key = root.find(".//KEY[@name='message']/VALUE")
                 if message_key is not None:
-                    print(f"{bcolors.FAIL}Upload to Moodle failed.{bcolors.ENDC}")
-                    print(f"{bcolors.FAIL}Error message: {message_key.text}{bcolors.ENDC}")
+                    print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
+                    print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
 
                 # Extract the message from <MESSAGE> for Moodle errors
                 message_key = root.find(".//MESSAGE")
                 if message_key is not None:
-                    print(f"{bcolors.FAIL}Upload to Moodle failed.{bcolors.ENDC}")
-                    print(f"{bcolors.FAIL}Error: {message_key.text}{bcolors.ENDC}")
+                    print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
+                    print(f"{bcolors.FAIL}❌ Error: {message_key.text}{bcolors.ENDC}")
 
                 sys.exit(1)
 
