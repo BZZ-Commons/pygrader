@@ -14,7 +14,7 @@ from utils import bcolors
 import xml.etree.ElementTree as ET
 
 
-DEBUG = False
+DEBUG = True
 
 
 def main():
@@ -44,78 +44,41 @@ def main():
 
 
 def collect_results() -> dict:
-    """
-    collects the results from all grading modules
-    :return:
-    """
     result = {
         'points': 0.0,
         'max': 0.0,
         'feedback': ''
     }
 
-    # Pytest
-    testresults = py_test()
-    result['points'] += testresults['points']
-    result['max'] += testresults['max']
-    result['feedback'] += wrap_feedback_table(testresults, 'Unittests')
-    # Pylint
-    testresults = py_lint()
-    result['points'] += testresults['points']
-    result['max'] += testresults['max']
-    result['feedback'] += wrap_feedback_table(testresults, 'Linting')
-    # Add a linkt to the repository
-    result['feedback'] += f'Link zum Repository: [{os.environ["REPO"]}]({os.environ["SERVER"]}/{os.environ["REPO"]})'
+    for func, title in [(py_test, 'Unittests'), (py_lint, 'Linting')]:
+        testresults = func()
+        result['points'] += testresults['points']
+        result['max'] += testresults['max']
+        result['feedback'] += wrap_feedback_table(testresults, title)
 
+    result['feedback'] += f'Link zum Repository: [{os.environ["REPO"]}]({os.environ["SERVER"]}/{os.environ["REPO"]})'
     result['points'] = round(result['points'], 2)
 
-    if DEBUG: print('######### FEEDBACK TABLES ######### ')
-    if DEBUG: print(result['feedback'])
+    if DEBUG:
+        print('######### FEEDBACK TABLES ######### ')
+        print(result['feedback'])
 
     return result
 
 
 def wrap_feedback_table(testresults: dict, title: str) -> str:
-    """
-    Adds a title to the feedback table and a total for the points
-    :param testresults: Testresults to wrap
-    :param title: Title of the feedback
-    :return:
-    """
-
-    feedback = f'#{title}'
-    feedback += '\n'
-    feedback += markdown_out(testresults['feedback'])
-    feedback += '\n'
-    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkten ({(testresults["points"]/testresults["max"])*100:.2f}%)**'
-    feedback += '\n***\n'
-
+    feedback = f'#{title}\n{markdown_out(testresults["feedback"])}\n'
+    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkten ({(testresults["points"]/testresults["max"])*100:.2f}%)**\n***\n'
     return feedback
 
 
-def markdown_out(results: dict) -> str:
-    """
-    creates a Markdown table from the results
-    :param results:
-    :return:
-    """
-    # if results is empty return string
+def markdown_out(results: list) -> str:
     if not results:
         return ''
-
-    # Extract headers
-    headers = list(results[0].keys())
-
-    # Start the table with headers
-
+    headers = results[0].keys()
     table = '| ' + ' | '.join(headers) + ' |\n'
     table += '| ' + ' | '.join(['---'] * len(headers)) + ' |\n'
-
-    # Add the rows
-    for entry in results:
-        row = [str(entry[header]) for header in headers]
-        table += '| ' + ' | '.join(row) + ' |\n'
-
+    table += ''.join(f'| {" | ".join(str(entry[h]) for h in headers)} |\n' for entry in results)
     return table
 
 
