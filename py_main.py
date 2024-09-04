@@ -62,10 +62,9 @@ def collect_results() -> dict:
     result['feedback'] += f'Link zum Repository: [{repo_path}]({server}/{repo_path})\n'
 
     # Add the GitHub Action status badge
-    badge_url = f'https://github.com/{repo_path}/actions/workflows/classroom.yml/badge.svg'
+    badge_url = f'https://img.shields.io/badge/upload-successfull-brightgreen'
     badge_link = f'https://github.com/{repo_path}/actions/workflows/classroom.yml'
-    result[
-        'feedback'] += f'[![Workflow for BZZ Programming Lessons using Github-Classroom and Moodle]({badge_url})]({badge_link})\n'
+    result['feedback'] += f'[![Workflow for BZZ Programming Lessons using Github-Classroom and Moodle]({badge_url})]({badge_link})\n'
 
     result['points'] = round(result['points'], 2)
 
