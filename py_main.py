@@ -133,7 +133,7 @@ def parse_moodle_response(response_text: str) -> None:
 
 
 def handle_moodle_error(root) -> None:
-    message_key = root.find(".//KEY[@name='message']/VALUE") or root.find(".//MESSAGE")
+    message_key = root.find(".//KEY[@name='message']/VALUE")# or root.find(".//MESSAGE")
     if message_key is not None:
         print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
         print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
