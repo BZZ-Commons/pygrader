@@ -50,7 +50,8 @@ def collect_results() -> dict:
     }
 
     # Add the Upload Successfully status badge
-    result['feedback'] += f'https://img.shields.io/badge/upload-successfully-brightgreen\n'
+    result['feedback'] += f'![Status Badge](https://img.shields.io/badge/upload-successfully-brightgreen "Optional Title")\n'
+
 
 
     for func, title in [(py_test, 'Unittests'), (py_lint, 'Linting')]:
