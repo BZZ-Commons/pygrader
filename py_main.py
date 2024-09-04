@@ -136,8 +136,10 @@ def handle_moodle_error(root) -> None:
     else:  # Message from Moodle
         message_key = root.find(".//MESSAGE")
         if message_key is not None:
+            # Replace \n with actual new lines for better readability
+            formatted_message = message_key.text.replace('\\n', '\n')
             print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
-            print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}❌ Error message: {formatted_message}{bcolors.ENDC}")
         else:
             print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
             print(f"{bcolors.FAIL}❌ No error message found. See log:{bcolors.ENDC}")
