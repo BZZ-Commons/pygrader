@@ -1,26 +1,3 @@
-""" This module is used to run pytest tests and return the results in a format that can be used by GitHub Actions
-    to provide feedback to students. It loads test cases from a JSON file and runs each test case using pytest.
-    The results are then collected and returned as a dictionary with the following keys
-    - category: The category of the test
-    - points: The points obtained
-    - max: The maximum points
-    - feedback: A list of feedback messages
-    Each feedback message is a dictionary with the following keys
-    - name: The name of the test
-    - feedback: The feedback message
-    - expected: The expected value (if applicable)
-    - actual: The actual value (if applicable)
-    - points: The points obtained
-    - max: The maximum points for the test
-    The points are calculated based on the test results as follows:
-    - If the test passes, the student receives the maximum points for the test
-    - If the test fails, the student receives 0 points for the test
-    - If the test is skipped, the student receives 0 points for the test
-    - If the test is marked as xfail, the student receives the maximum points for the test
-    The total points are calculated by summing the points obtained from each test case.
-    The maximum points are calculated by summing the maximum points from each test case.
-"""
-
 import json
 import os
 import sys
@@ -35,60 +12,41 @@ from utils import bcolors
 
 def py_test():
     cases_list = load_cases()
-    results = {
-        'category': 'pytest',
-        'points': 0,
-        'max': 0,
-        'feedback': []
-    }
+    results = initialize_results()
     total_points = 0
     total_max = 0
-    args = ['-k', '','--disable-warnings', '-q'] #--disable-warnings is used to suppress warnings from py_test.py
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.BOLD}{bcolors.HEADER}Running {len(cases_list)} Tests{bcolors.ENDC}')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    args = ['-k', '', '--disable-warnings', '-q']  # --disable-warnings is used to suppress warnings from py_test.py
+
+    print_header(cases_list)
+
     passed_cases = 0
     for casenum, case in enumerate(cases_list):
-        result = {
-            'name': case.name,
-            'feedback': '',
-            'expected': '',
-            'actual': '',
-            'points': 0,
-            'max': case.points
-        }
+        result = initialize_case_result(case)
         args[1] = case.function
+
         with Capturing() as output:
-            print('\n\n')
-            print('################################################################################')
-            print(f'Running test: {case.name} {casenum + 1}/{len(cases_list)}')
-            print('################################################################################')
             exitcode = pytest.main(args)
+
         if exitcode == ExitCode.OK:
             passed_cases += 1
             summary = output[len(output) - 1]
             if 'passed' in summary:
                 result['feedback'] = 'Success'
                 result['points'] = case.points
-                for index, line in enumerate(output):
-                    if index == 4:
-                        line = f'{bcolors.BOLD}✅  {line}{bcolors.ENDC}'
-                    print(f"{bcolors.OKGREEN}{line}{bcolors.ENDC}")
+                print_test_header(case.name, casenum + 1, len(cases_list), True)
+
             elif 'xfailed' in summary:
                 result['feedback'] = 'Success: Fails as expected'
                 result['points'] = case.points
-                for index, line in enumerate(output):
-                    if index == 4:
-                        line = '✅  ' + line
-                    print(f"{bcolors.OKGREEN}{line}{bcolors.ENDC}")
+                print_test_header(case.name, casenum + 1, len(cases_list), True)
+
             elif 'skipped' in summary:
                 result['feedback'] = 'Test was skipped at this time'
-                for index, line in enumerate(output):
-                    if index == 4:
-                        line = '✅  ' + line
-                    print(f"{bcolors.OKGREEN}{line}{bcolors.ENDC}")
+                print_test_header(case.name, casenum + 1, len(cases_list), True)
+
         elif exitcode == ExitCode.TESTS_FAILED:
             result['feedback'] = 'Test failed, check GitHub Actions for details'
+            print_test_header(case.name, casenum + 1, len(cases_list), False)
             extract_assertion(output, result)
         else:
             result['feedback'] = 'Unknown error, check GitHub Actions for details'
@@ -99,65 +57,99 @@ def py_test():
         results['feedback'].append(result)
     results['points'] = total_points
     results['max'] = total_max
-
+    print('\n')
     print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Grand total tests passed: {passed_cases}/{len(cases_list)}{bcolors.ENDC}')
     return results
 
+def print_header(cases_list):
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(f'{bcolors.BOLD}{bcolors.HEADER}Running {len(cases_list)} Tests{bcolors.ENDC}')
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+
+
+def print_test_header(test_name, current, total, passed):
+    color = bcolors.OKGREEN if passed else bcolors.FAIL
+    print('\n\n')
+    print(f'{color}################################################################################{bcolors.ENDC}')
+    print(f'{color}{"✅" if passed else "❌"} Running test: {test_name} {current}/{total}{bcolors.ENDC}')
+    print(f'{color}################################################################################{bcolors.ENDC}')
 
 def extract_assertion(message, result) -> None:
+    """Extract assertion failure details from the pytest output."""
     for index, line in enumerate(message):
-        if index == 4:
-            line = f'{bcolors.BOLD}❌  {line}{bcolors.ENDC}'
-        print(f"{bcolors.FAIL}{line}{bcolors.ENDC}")
-
         if 'Comparing values:' in line:
+            print(f"{bcolors.FAIL}Comparing values:{bcolors.ENDC}")
             result['feedback'] = 'Assertion Error'
             result['expected'] = message[index + 1].split(':', 1)[1].strip()
-            print(f'\t\t\t{bcolors.FAIL}Expected : {result["expected"]}{bcolors.ENDC}')
+            print(f'\t{bcolors.FAIL}Expected : {result["expected"]}{bcolors.ENDC}')
             result['actual'] = message[index + 2].split(':', 1)[1].strip()
-            print(f'\t\t\t{bcolors.FAIL}Actual : {result["actual"]}{bcolors.ENDC}')
-            print('\n\n')
+            print(f'\t{bcolors.FAIL}Actual : {result["actual"]}{bcolors.ENDC}')
             break
+
 
 def load_cases() -> list:
     """
-    loads all test cases
-    :return: a list of testcases to be run
-    :rtype: none
+    Loads all test cases from the JSON file specified in the environment.
+    :return: a list of test cases to be run
     """
-    cases_list = list()
-
     file_unittest = os.environ['FILE_UNITTESTS']
-
-    try:
-        with open(f'./.github/autograding/{file_unittest}', encoding='UTF-8') as file:
-            cases = json.load(file)
-            for item in cases:
-                testcase = Testcase(
-                    name=item['name'],
-                    function=item['function'],
-                    timeout=item['timeout'],
-                    points=item['points']
-                )
-                cases_list.append(testcase)
-    except IOError:
-        print(f'file {file_unittest} not found')
+    cases = load_file(f'./.github/autograding/{file_unittest}')
+    cases_list = [Testcase(name=item['name'], function=item['function'], timeout=item['timeout'], points=item['points']) for item in cases] if cases else []
     return cases_list
+
+
+def initialize_results():
+    """Initialize the results dictionary."""
+    return {
+        'category': 'pytest',
+        'points': 0,
+        'max': 0,
+        'feedback': []
+    }
+
+
+def initialize_case_result(case):
+    """Initialize the result dictionary for an individual test case."""
+    return {
+        'name': case.name,
+        'feedback': '',
+        'expected': '',
+        'actual': '',
+        'points': 0,
+        'max': case.points
+    }
+
+
+def load_file(filepath: str) -> dict:
+    """
+    Utility function to load JSON data from a file.
+    :param filepath: Path to the JSON file.
+    :return: Parsed JSON data as a dictionary, or an empty dictionary if the file is not found.
+    """
+    try:
+        with open(filepath, encoding='UTF-8') as file:
+            return json.load(file)
+    except IOError:
+        print(f'File {filepath} not found')
+        return {}
 
 
 @dataclass
 class Testcase:
     """
-    definition of a test case
+    Definition of a test case
     """
     name: str
     function: str
     timeout: int
     points: float
 
+
 class Capturing(list):
     """
-    captures the output to stdout and stderr
+    Captures the output to stdout and stderr
     """
 
     def __enter__(self):
