@@ -55,7 +55,18 @@ def collect_results() -> dict:
         result['max'] += testresults['max']
         result['feedback'] += wrap_feedback_table(testresults, title)
 
-    result['feedback'] += f'Link zum Repository: [{os.environ["REPO"]}]({os.environ["SERVER"]}/{os.environ["REPO"]})'
+    repo_path = os.environ["REPO"]
+    server = os.environ["SERVER"]
+
+    # Add the link to the repository
+    result['feedback'] += f'Link zum Repository: [{repo_path}]({server}/{repo_path})\n'
+
+    # Add the GitHub Action status badge
+    badge_url = f'https://github.com/{repo_path}/actions/workflows/classroom.yml/badge.svg'
+    badge_link = f'https://github.com/{repo_path}/actions/workflows/classroom.yml'
+    result[
+        'feedback'] += f'[![Workflow for BZZ Programming Lessons using Github-Classroom and Moodle]({badge_url})]({badge_link})\n'
+
     result['points'] = round(result['points'], 2)
 
     if DEBUG:
