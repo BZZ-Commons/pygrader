@@ -131,15 +131,15 @@ def parse_moodle_response(response_text: str) -> None:
 def handle_moodle_error(root) -> None:
     message_key = root.find(".//KEY[@name='message']/VALUE")
     if message_key is not None:  # Message from the plugin
+        # Replace \n with actual new lines for better readability
         print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
-        print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
+        formatted_message = message_key.text.replace('\\n', '\n')
+        print(f"{bcolors.FAIL}❌ Error message: {formatted_message}{bcolors.ENDC}")
     else:  # Message from Moodle
         message_key = root.find(".//MESSAGE")
         if message_key is not None:
-            # Replace \n with actual new lines for better readability
-            formatted_message = message_key.text.replace('\\n', '\n')
             print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
-            print(f"{bcolors.FAIL}❌ Error message: {formatted_message}{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
         else:
             print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
             print(f"{bcolors.FAIL}❌ No error message found. See log:{bcolors.ENDC}")
