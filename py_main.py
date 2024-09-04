@@ -14,33 +14,37 @@ from utils import bcolors
 import xml.etree.ElementTree as ET
 
 
-DEBUG = True
+DEBUG = False
 
 
 def main():
-    target_url = os.environ['TARGET_URL']
-    token = os.getenv('TOKEN')
-    function = os.environ['FUNCTION']
-    username = os.environ['USERNAME']
-    server = os.environ['SERVER']
-    repo_path = os.environ['REPO']
-    if DEBUG: print(
-        f'TARGET_URL={target_url}, TOKEN={token}, FUNCTION={function}, '
-        f'USERNAME={username}, SERVER={server}, REPO={repo_path}')
+    env_vars = {
+        'target_url': os.environ['TARGET_URL'],
+        'token': os.getenv('TOKEN'),
+        'function': os.environ['FUNCTION'],
+        'username': os.environ['USERNAME'],
+        'server': os.environ['SERVER'],
+        'repo_path': os.environ['REPO'],
+    }
 
-    repository = repo_path.split('/')[1]
-    assignment = repository.removesuffix('-' + username)
+    if DEBUG:
+        print(f'{env_vars}')
+
+    repository = env_vars['repo_path'].split('/')[1]
+    assignment = repository.removesuffix('-' + env_vars['username'])
 
     result = collect_results()
     update_moodle(
         result=result,
-        target_url=target_url,
-        token=token,
-        function=function,
-        user_name=username,
+        target_url=env_vars['target_url'],
+        token=env_vars['token'],
+        function=env_vars['function'],
+        user_name=env_vars['username'],
         assignment=assignment,
-        external_link=f'{server}/{repo_path}'
+        external_link=f'{env_vars["server"]}/{env_vars["repo_path"]}'
     )
+
+
 
 
 def collect_results() -> dict:
@@ -82,26 +86,7 @@ def markdown_out(results: list) -> str:
     return table
 
 
-def update_moodle(
-        result: dict,
-        target_url: str,
-        token: str,
-        function: str,
-        user_name: str,
-        assignment: str,
-        external_link: str
-) -> None:
-    """
-    calls the webservice to update the assignment in moodle
-    :param result:
-    :param target_url:
-    :param token:
-    :param function:
-    :param user_name:
-    :param assignment:
-    :param external_link:
-    :return:
-    """
+def update_moodle(result: dict, target_url: str, token: str, function: str, user_name: str, assignment: str, external_link: str) -> None:
     url = f'{target_url}/webservice/rest/server.php/?wstoken={token}&wsfunction={function}'
     feedback = urllib.parse.quote(result['feedback'])
     payload = {
@@ -112,57 +97,33 @@ def update_moodle(
         'externallink': external_link,
         'feedback': feedback
     }
-    print('\n\n')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.HEADER}{bcolors.BOLD}UPLOAD TO MOODLE{bcolors.ENDC}')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}')
-    print(f'{bcolors.OKCYAN}👤 User : \t\t{payload["user_name"]}{bcolors.ENDC}')
-    print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')
-    print(f'{bcolors.OKCYAN}🔗 Link : \t\t{payload["externallink"]}{bcolors.ENDC}')
 
+    print_moodle_payload(payload)
 
-
-
-
-    if DEBUG: print(url)
-    if DEBUG: print(payload)
+    if DEBUG:
+        print(url)
+        print(payload)
     response = requests.post(url=url, data=payload, timeout=30)
-    if DEBUG: print(response)
-    if DEBUG: print("")
-    if DEBUG: print(response.text)
+    if DEBUG:
+        print(response)
+        print(response.text)
 
-    # Check if Upload was successful
-    # response.text is not just XML, it may contain other content
-    xml_start = response.text.find('<?xml')
+    parse_moodle_response(response.text)
 
-    # If an XML declaration is found, parse from that point
+
+def parse_moodle_response(response_text: str) -> None:
+    xml_start = response_text.find('<?xml')
+
     if xml_start != -1:
-        xml_content = response.text[xml_start:]
+        xml_content = response_text[xml_start:]
         try:
             root = ET.fromstring(xml_content)
 
-            # Extract the value of the 'name' key
             name_key = root.find(".//KEY[@name='name']/VALUE")
-
-            # Check if the value of the 'name' key is 'success'
             if name_key is not None and name_key.text == 'success':
                 print(f"{bcolors.OKGREEN}✅ Upload to Moodle successful.{bcolors.ENDC}")
             else:
-                # Extract the message from <KEY name="message"> for Plugin errors
-                message_key = root.find(".//KEY[@name='message']/VALUE")
-                if message_key is not None:
-                    print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
-                    print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
-
-                # Extract the message from <MESSAGE> for Moodle errors
-                message_key = root.find(".//MESSAGE")
-                if message_key is not None:
-                    print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
-                    print(f"{bcolors.FAIL}❌ Error: {message_key.text}{bcolors.ENDC}")
-
-                sys.exit(1)
-
+                handle_moodle_error(root)
         except ET.ParseError as e:
             print(f"Failed to parse XML: {e}")
             sys.exit(1)
@@ -171,6 +132,23 @@ def update_moodle(
         sys.exit(1)
 
 
+def handle_moodle_error(root) -> None:
+    message_key = root.find(".//KEY[@name='message']/VALUE") or root.find(".//MESSAGE")
+    if message_key is not None:
+        print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
+        print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
+    sys.exit(1)
+
+
+def print_moodle_payload(payload: dict) -> None:
+    print('\n\n')
+    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(f'{bcolors.HEADER}{bcolors.BOLD}UPLOAD TO MOODLE{bcolors.ENDC}')
+    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}👤 User : \t\t{payload["user_name"]}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}🔗 Link : \t\t{payload["externallink"]}{bcolors.ENDC}')
 
 
 if __name__ == '__main__':
