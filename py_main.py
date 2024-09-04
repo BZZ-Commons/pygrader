@@ -3,6 +3,7 @@
 import os
 import sys
 import urllib.parse
+import xml.etree.ElementTree as ET
 
 import requests
 
@@ -10,11 +11,7 @@ from py_lint import py_lint
 from py_test import py_test
 from utils import bcolors
 
-
-import xml.etree.ElementTree as ET
-
-
-DEBUG = True
+DEBUG = False
 
 
 def main():
@@ -45,8 +42,6 @@ def main():
     )
 
 
-
-
 def collect_results() -> dict:
     result = {
         'points': 0.0,
@@ -72,7 +67,7 @@ def collect_results() -> dict:
 
 def wrap_feedback_table(testresults: dict, title: str) -> str:
     feedback = f'#{title}\n{markdown_out(testresults["feedback"])}\n'
-    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkten ({(testresults["points"]/testresults["max"])*100:.2f}%)**\n***\n'
+    feedback += f'**{testresults["points"]:.2f}/{testresults["max"]:.2f} Punkten ({(testresults["points"] / testresults["max"]) * 100:.2f}%)**\n***\n'
     return feedback
 
 
@@ -86,7 +81,8 @@ def markdown_out(results: list) -> str:
     return table
 
 
-def update_moodle(result: dict, target_url: str, token: str, function: str, user_name: str, assignment: str, external_link: str) -> None:
+def update_moodle(result: dict, target_url: str, token: str, function: str, user_name: str, assignment: str,
+                  external_link: str) -> None:
     url = f'{target_url}/webservice/rest/server.php/?wstoken={token}&wsfunction={function}'
     feedback = urllib.parse.quote(result['feedback'])
     payload = {
@@ -133,18 +129,30 @@ def parse_moodle_response(response_text: str) -> None:
 
 
 def handle_moodle_error(root) -> None:
-    message_key = root.find(".//KEY[@name='message']/VALUE")# or root.find(".//MESSAGE")
-    if message_key is not None:
+    message_key = root.find(".//KEY[@name='message']/VALUE")
+    if message_key is not None:  # Message from the plugin
         print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
         print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
+    else:  # Message from Moodle
+        message_key = root.find(".//MESSAGE")
+        if message_key is not None:
+            print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
+        else:
+            print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}❌ No error message found. See log:{bcolors.ENDC}")
+            print(f'{bcolors.FAIL}{ET.tostring(root, encoding="unicode")}{bcolors.ENDC}')
+
     sys.exit(1)
 
 
 def print_moodle_payload(payload: dict) -> None:
     print('\n\n')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     print(f'{bcolors.HEADER}{bcolors.BOLD}UPLOAD TO MOODLE{bcolors.ENDC}')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}👤 User : \t\t{payload["user_name"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')
