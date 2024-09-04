@@ -14,7 +14,7 @@ from utils import bcolors
 import xml.etree.ElementTree as ET
 
 
-DEBUG = False
+DEBUG = True
 
 
 def main():
