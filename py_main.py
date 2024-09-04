@@ -49,6 +49,10 @@ def collect_results() -> dict:
         'feedback': ''
     }
 
+    # Add the Upload Successfully status badge
+    result['feedback'] += f'https://img.shields.io/badge/upload-successfully-brightgreen\n'
+
+
     for func, title in [(py_test, 'Unittests'), (py_lint, 'Linting')]:
         testresults = func()
         result['points'] += testresults['points']
@@ -61,10 +65,6 @@ def collect_results() -> dict:
     # Add the link to the repository
     result['feedback'] += f'Link zum Repository: [{repo_path}]({server}/{repo_path})\n'
 
-    # Add the GitHub Action status badge
-    badge_url = f'https://img.shields.io/badge/upload-successfull-brightgreen'
-    badge_link = f'https://github.com/{repo_path}/actions/workflows/classroom.yml'
-    result['feedback'] += f'[![Workflow for BZZ Programming Lessons using Github-Classroom and Moodle]({badge_url})]({badge_link})\n'
 
     result['points'] = round(result['points'], 2)
 
