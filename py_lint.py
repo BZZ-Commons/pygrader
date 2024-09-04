@@ -88,14 +88,19 @@ def py_lint():
     return results
 
 
+def load_file(filepath: str) -> dict:
+    try:
+        with open(filepath, encoding='UTF-8') as file:
+            return json.load(file)
+    except IOError:
+        print(f'File {filepath} not found')
+        return {}
+
+
 def load_config() -> dict:
     file_lint = os.environ['FILE_LINT']
-    try:
-        with open(f'./.github/autograding/{file_lint}', encoding='UTF-8') as file:
-            params = json.load(file)
-    except IOError:
-        print(f'file {file_lint} not found')
-    return params
+    return load_file(f'./.github/autograding/{file_lint}')
+
 
 def print_to_console(results: dict, config: dict):
     """
