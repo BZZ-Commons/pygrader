@@ -28,7 +28,7 @@ def main():
         print(f'{env_vars}')
 
     repository = env_vars['repo_path'].split('/')[1]
-    assignment = repository.removesuffix('-' + env_vars['username'])
+    assignment = repository.split('-' + env_vars['username'])[0]
 
     result = collect_results()
     update_moodle(
