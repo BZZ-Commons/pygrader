@@ -33,9 +33,12 @@ def notify_classroom(runner_results):
     if not token:
         print("GITHUB_TOKEN is missing")
         return
+    print('Token da')
 
     nwo = os.getenv('GITHUB_REPOSITORY', '/')
     owner, repo = nwo.split('/')
+    print(owner)
+    print(repo)
     if not owner or not repo:
         print("Owner or repository is missing")
         return
@@ -46,7 +49,7 @@ def notify_classroom(runner_results):
     except ValueError:
         print("Invalid GITHUB_RUN_ID")
         return
-
+    print(run_id)
     # Fetch the workflow run using GitHub CLI
     workflow_run_response = subprocess.run(
         ['gh', 'api', f'/repos/{owner}/{repo}/actions/runs/{run_id}'],
@@ -56,7 +59,7 @@ def notify_classroom(runner_results):
     if workflow_run_response.returncode != 0:
         print(f"Failed to fetch workflow run: {workflow_run_response.stderr}")
         return
-
+    print(workflow_run_response)
     workflow_data = json.loads(workflow_run_response.stdout)
     check_suite_url = workflow_data.get('check_suite_url', '')
     check_suite_id = check_suite_url.split('/')[-1]
