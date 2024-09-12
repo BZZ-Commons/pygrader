@@ -9,6 +9,7 @@ import requests
 
 from py_lint import py_lint
 from py_test import py_test
+from py_classroom_output import generate_feedback_for_classroom
 from utils import bcolors
 
 DEBUG = False
@@ -31,8 +32,9 @@ def main():
     assignment = repository.split('-' + env_vars['username'])[0]
 
     result = collect_results()
+    generate_feedback_for_classroom(result[1])
     update_moodle(
-        result=result,
+        result=result[0],
         target_url=env_vars['target_url'],
         token=env_vars['token'],
         function=env_vars['function'],
@@ -40,6 +42,9 @@ def main():
         assignment=assignment,
         external_link=f'{env_vars["server"]}/{env_vars["repo_path"]}'
     )
+
+
+
 
 
 def collect_results() -> dict:
@@ -52,16 +57,17 @@ def collect_results() -> dict:
     # Add the Upload Successfully status badge
     result['feedback'] += f'![Status Badge](https://img.shields.io/badge/upload-successfully-brightgreen "Optional Title")\n'
 
-
+    test_result_collection = []
 
     for func, title in [(py_test, 'Unittests'), (py_lint, 'Linting')]:
-        testresults = func()
-        result['points'] += testresults['points']
-        result['max'] += testresults['max']
-        result['feedback'] += wrap_feedback_table(testresults, title)
-
+        test_results = func()
+        test_result_collection.append(test_results)
+        result['points'] += test_results['points']
+        result['max'] += test_results['max']
+        result['feedback'] += wrap_feedback_table(test_results, title)
     repo_path = os.environ["REPO"]
     server = os.environ["SERVER"]
+
 
     # Add the link to the repository
     result['feedback'] += f'Link zum Repository: [{repo_path}]({server}/{repo_path})\n'
@@ -73,7 +79,7 @@ def collect_results() -> dict:
         print('######### FEEDBACK TABLES ######### ')
         print(result['feedback'])
 
-    return result
+    return result, test_result_collection
 
 
 def wrap_feedback_table(testresults: dict, title: str) -> str:
@@ -170,6 +176,7 @@ def print_moodle_payload(payload: dict) -> None:
     print(f'{bcolors.OKCYAN}👤 User : \t\t{payload["user_name"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}🔗 Link : \t\t{payload["externallink"]}{bcolors.ENDC}')
+
 
 
 if __name__ == '__main__':
