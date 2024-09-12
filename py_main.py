@@ -34,19 +34,8 @@ def main():
 
     result = collect_results()
     #generate_feedback_for_classroom(result[1])
-
-    runner_results = [
-        {
-            "results": {
-                "max_score": 100,
-                "tests": [
-                    {"score": 30},
-                    {"score": 40}
-                ]
-            }
-        }
-    ]
-    notify_classroom(runner_results)
+    print('BBBB')
+    notify_classroom(result[1])
 
     update_moodle(
         result=result[0],

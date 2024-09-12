@@ -3,13 +3,28 @@ import os
 import subprocess
 
 
-def notify_classroom(runner_results):
+def notify_classroom(results):
     """
     Combine max score and total score from each runner's results, and update the check run.
 
     Args:
         runner_results (list): List of dicts, each containing runner results.
     """
+    max = sum([result['max'] for result in results])
+    points = sum([result['points'] for result in results])
+
+
+    runner_results = [
+        {
+            "results": {
+                "max_score": max,
+                "tests": [
+                    {"score": points},
+                ]
+            }
+        }
+    ]
+
     # Combine max score and total score from each {runner, results} pair
     total_points = 0
     max_points = 0
