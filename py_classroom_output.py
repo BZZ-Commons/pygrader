@@ -22,6 +22,8 @@ def transform_feedback(input_data):
         dict: Transformed data in the required format.
     """
 
+    print(input_data)
+
     transformed_data = {
         'version': 3,
         'status': 'pass',  # Default to pass; will be set to fail if any test or lint fails
