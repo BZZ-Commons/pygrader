@@ -29,7 +29,7 @@ def notify_classroom(runner_results):
         return
 
     # Get GitHub token and repository details from environment variables
-    token = os.getenv('GITHUB_TOKEN')
+    token = os.getenv('GHSECRET')
     if not token:
         print("GITHUB_TOKEN is missing")
         return
