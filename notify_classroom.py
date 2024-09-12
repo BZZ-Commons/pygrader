@@ -55,7 +55,7 @@ def notify_classroom(runner_results):
     if workflow_run_response.returncode != 0:
         print(f"Failed to fetch workflow run: {workflow_run_response.stderr}")
         return
-    print(workflow_run_response)
+
     workflow_data = json.loads(workflow_run_response.stdout)
     check_suite_url = workflow_data.get('check_suite_url', '')
     check_suite_id = check_suite_url.split('/')[-1]
