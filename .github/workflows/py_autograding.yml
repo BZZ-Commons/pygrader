@@ -61,7 +61,7 @@ jobs:
 
   # Autograding Reporter
       - name: Autograding Reporter
-        uses: ./
+        uses: classroom-resources/autograding-grading-reporter@v1
         env:
           PYTHON-TEST-WITH-SCORE_RESULTS: "${{steps.python-test-with-score.outputs.result}}"
         with:
