@@ -70,12 +70,12 @@ def notify_classroom(runner_results):
         print(f"Failed to list check runs: {check_runs_response.stderr}")
         return
 
-    print(check_runs_response)
     print("AAA")
     check_runs_data = json.loads(check_runs_response.stdout)
     if len(check_runs_data) == 0:
         print("No matching check run found")
         return
+    print(check_runs_data)
 
     check_run_id = check_runs_data[0].get('id')
 
