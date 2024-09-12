@@ -65,12 +65,10 @@ def py_lint():
     if max_value:
         results['max'] = max_value
 
-
-
     for message in reporter.messages:
         output = {
             'category': message.category,
-            'message': message.msg,
+            'message': f'{message.msg_id} {message.msg}',
             'path': message.path,
             'line': message.line
         }
@@ -127,8 +125,12 @@ def print_to_console(results: dict, config: dict):
         print(
             f'{color}{feedback["category"]} in {feedback["path"]} line {feedback["line"]}: {feedback["message"]}{bcolors.ENDC}')
 
-    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Points: {results["points"]}/{results["max"]}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Points: {results["points"]:.2f}/{results["max"]:.2f}{bcolors.ENDC}')
 
 
 if __name__ == '__main__':
+    from dotenv import load_dotenv
+
+    # loading variables from .env file
+    load_dotenv()
     py_lint()
