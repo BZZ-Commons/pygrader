@@ -72,6 +72,7 @@ def notify_classroom(runner_results):
         return
 
     print(check_runs_response)
+    print("AAA")
     check_runs_data = json.loads(check_runs_response.stdout)
     if len(check_runs_data) == 0:
         print("No matching check run found")
