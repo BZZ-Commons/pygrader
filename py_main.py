@@ -162,7 +162,7 @@ def handle_moodle_error(root) -> None:
             print(f"{bcolors.FAIL}❌ No error message found. See log:{bcolors.ENDC}")
             print(f'{bcolors.FAIL}{ET.tostring(root, encoding="unicode")}{bcolors.ENDC}')
 
-    sys.exit(1)
+    #sys.exit(1)
 
 
 def print_moodle_payload(payload: dict) -> None:
