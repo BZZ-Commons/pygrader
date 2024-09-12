@@ -52,17 +52,3 @@ jobs:
 
       - name: Run Tests and Upload to Moodle
         run: python3 ./autograde/py_main.py
-
-          # Convert the JSON result to base64 and save as GitHub Action output
-      - name: Encode transformed data to base64
-        id: python-test-with-score
-        run: |
-          echo "result=$(jq -c . transformed_output.json | jq -sRr @base64)" >> "$GITHUB_OUTPUT"
-
-  # Autograding Reporter
-      - name: Autograding Reporter
-        uses: classroom-resources/autograding-grading-reporter@v1
-        env:
-          PYTHON-TEST-WITH-SCORE_RESULTS: "${{steps.python-test-with-score.outputs.result}}"
-        with:
-          runners: python-test-with-score
