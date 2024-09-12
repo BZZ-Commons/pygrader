@@ -40,23 +40,26 @@ def transform_feedback(input_data):
         if data['category'] == 'pytest':
             for test in data['feedback']:
                 test_entry = {
-                    'name': test['name'].replace('_', ' '),
+                    'name': test['name'],
                     'status': 'pass' if test['feedback'] == 'Success' else 'fail',
                     'message': '',  # Placeholder message
                     'test_code': '',  # Empty as per the requirement
                     'task_id': task_id_counter,
-                    'filename': '',  # Empty as per the requirement
+                    'filename': 'file',  # Empty as per the requirement
                     'line_no': 0,  # Line number set to 0
-                    'duration': 0,  # Duration set to 0
+                    'duration': 0.1,  # Duration set to 0
                     'score': test['points']  # Points taken from the JSON
                 }
 
                 # If the test failed, we add a failure message
                 if test_entry['status'] == 'fail':
                     test_entry['message'] = (
-                        f"assert {test['actual']} == {test['expected']}\n  comparison failed\n"
                         f"  Obtained: {test['actual']}\n  Expected: {test['expected']}"
                     )
+                    test_entry['test_code'] = (
+                        f"assert {test['actual']} == {test['expected']}\n",
+                    )
+
                     transformed_data['status'] = 'fail'  # Set overall status to fail if any test fails
 
                 transformed_data['tests'].append(test_entry)
