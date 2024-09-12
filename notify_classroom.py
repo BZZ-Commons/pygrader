@@ -77,7 +77,7 @@ def notify_classroom(runner_results):
         return
     print(check_runs_data)
 
-    check_run_id = check_runs_data[0].get('id')
+    check_run_id = check_runs_data["check_runs"][0].get('id')
 
     # Update the check run with the autograding results using GitHub CLI
     text = f"Points {total_points}/{max_points}"
