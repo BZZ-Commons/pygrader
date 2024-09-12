@@ -50,7 +50,10 @@ def py_test():
             extract_assertion(output, result)
         else:
             result['feedback'] = 'Unknown error, check GitHub Actions for details'
-            print(f"{bcolors.FAIL}{'Failed to get ExitCode.OK or ExitCode.TESTS_FAILED'}{bcolors.ENDC}")
+            print(f"{bcolors.FAIL} Failed to get ExitCode.OK or ExitCode.TESTS_FAILED {bcolors.ENDC}")
+            print(f"{bcolors.FAIL} {output} {bcolors.ENDC}")
+
+
 
         total_points += result['points']
         total_max += result['max']
@@ -80,12 +83,11 @@ def extract_assertion(message, result) -> None:
     """Extract assertion failure details from the pytest output."""
     for index, line in enumerate(message):
         if 'Comparing values:' in line:
-            print(f"{bcolors.FAIL}Comparing values:{bcolors.ENDC}")
             result['feedback'] = 'Assertion Error'
             result['expected'] = message[index + 1].split(':', 1)[1].strip()
-            print(f'\t{bcolors.FAIL}Expected : {result["expected"]}{bcolors.ENDC}')
+            print(f'{bcolors.FAIL}Expected :\t {result["expected"]}{bcolors.ENDC}')
             result['actual'] = message[index + 2].split(':', 1)[1].strip()
-            print(f'\t{bcolors.FAIL}Actual : {result["actual"]}{bcolors.ENDC}')
+            print(f'{bcolors.FAIL}Actual :\t {result["actual"]}{bcolors.ENDC}')
             break
 
 
