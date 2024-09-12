@@ -1,7 +1,6 @@
+import json
 import os
 import subprocess
-import json
-
 
 
 def notify_classroom(runner_results):
@@ -29,16 +28,13 @@ def notify_classroom(runner_results):
         return
 
     # Get GitHub token and repository details from environment variables
-    token = os.getenv('GHSECRET')
+    token = os.getenv('GH_TOKEN')
     if not token:
         print("GITHUB_TOKEN is missing")
         return
-    print('Token da')
 
     nwo = os.getenv('GITHUB_REPOSITORY', '/')
     owner, repo = nwo.split('/')
-    print(owner)
-    print(repo)
     if not owner or not repo:
         print("Owner or repository is missing")
         return
@@ -49,7 +45,7 @@ def notify_classroom(runner_results):
     except ValueError:
         print("Invalid GITHUB_RUN_ID")
         return
-    print(run_id)
+
     # Fetch the workflow run using GitHub CLI
     workflow_run_response = subprocess.run(
         ['gh', 'api', f'/repos/{owner}/{repo}/actions/runs/{run_id}'],
@@ -75,6 +71,7 @@ def notify_classroom(runner_results):
         print(f"Failed to list check runs: {check_runs_response.stderr}")
         return
 
+    print(check_runs_response)
     check_runs_data = json.loads(check_runs_response.stdout)
     if len(check_runs_data) == 0:
         print("No matching check run found")
@@ -103,7 +100,4 @@ def notify_classroom(runner_results):
     else:
         print(f"Check run updated: {text}")
 
-
 # Example usage:
-
-

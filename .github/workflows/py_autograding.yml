@@ -6,7 +6,6 @@ on:
 
 env:
   DEVOPS_DIR: devops
-  GHSECRET: ${{ secrets.GITHUB_TOKEN }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   TARGET_URL: ${{ vars.MOODLE_URL }}
   TOKEN: ${{ secrets.MOODLE_TOKEN2 }}
