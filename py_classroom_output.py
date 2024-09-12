@@ -56,9 +56,6 @@ def transform_feedback(input_data):
                     test_entry['message'] = (
                         f"  Obtained: {test['actual']}\n  Expected: {test['expected']}"
                     )
-                    test_entry['test_code'] = (
-                        f"assert {test['actual']} == {test['expected']}\n",
-                    )
 
                     transformed_data['status'] = 'fail'  # Set overall status to fail if any test fails
 
