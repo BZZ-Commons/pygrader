@@ -1,14 +1,19 @@
 import json
+from collections import defaultdict
 
 def generate_feedback_for_classroom(input_data):
     output = transform_feedback(input_data)
-    print("AAAAAAAAA")
+    # Save the transformed data to a JSON file
+    with open('transformed_output.json', 'w') as outfile:
+        json.dump(output, outfile)
     print(json.dumps(output, indent=2))
 
 
 def transform_feedback(input_data):
     """
-    Transforms the input test and linter result data into a new structured format.
+    Transforms the input test and linter result data into a new structured format,
+    ensuring that all lint feedbacks are grouped into one test entry and summarized
+    by 'error', 'warning', 'refactor', and 'convention'.
 
     Args:
         input_data (list): A list containing feedback dictionaries from both tests and linter.
@@ -19,7 +24,7 @@ def transform_feedback(input_data):
 
     transformed_data = {
         'version': 3,
-        'status': 'pass',  # Default to pass; will be set to fail if any test fails
+        'status': 'pass',  # Default to pass; will be set to fail if any test or lint fails
         'tests': [],
         'max_score': 0  # Will be updated as we process the data
     }
@@ -27,6 +32,7 @@ def transform_feedback(input_data):
     total_points = 0
     total_max = 0
     task_id_counter = 0
+    lint_category_counts = defaultdict(int)  # To count the number of messages by category
 
     for data in input_data:
         if data['category'] == 'pytest':
@@ -62,25 +68,36 @@ def transform_feedback(input_data):
             linter_points = data['points']
             linter_max = data['max']
 
-            # Linting feedback entry
+            # Count lint feedback by category
             for lint in data['feedback']:
-                linter_entry = {
-                    'name': 'Linting feedback',
-                    'status': 'fail' if linter_points < linter_max else 'pass',
-                    'message': f"{lint['category'].capitalize()} at {lint['path']}:{lint['line']} - {lint['message']}",
-                    'test_code': '',  # Empty as per the requirement
-                    'task_id': task_id_counter,
-                    'filename': lint['path'],
-                    'line_no': lint['line'],
-                    'duration': 0,  # No duration for linting
-                    'score': linter_points
-                }
+                lint_category_counts[lint['category']] += 1
 
-                if linter_entry['status'] == 'fail':
-                    transformed_data['status'] = 'fail'  # Set overall status to fail if any lint feedback fails
+            # Create a summary message for all lint feedback counts
+            lint_summary_message = (
+                f"error: {lint_category_counts['error']}, "
+                f"warning: {lint_category_counts['warning']}, "
+                f"refactor: {lint_category_counts['refactor']}, "
+                f"convention: {lint_category_counts['convention']}"
+            )
 
-                transformed_data['tests'].append(linter_entry)
-                task_id_counter += 1
+            # Create a single test entry for all lint feedback
+            lint_entry = {
+                'name': 'Linting feedback',
+                'status': 'fail' if linter_points < linter_max else 'pass',
+                'message': lint_summary_message,  # Summary message of counts
+                'test_code': '',  # Empty as per the requirement
+                'task_id': task_id_counter,
+                'filename': ', '.join({item['path'] for item in data['feedback']}),  # Combine file paths
+                'line_no': 0,  # No specific line number
+                'duration': 0,  # No duration for linting
+                'score': linter_points
+            }
+
+            if lint_entry['status'] == 'fail':
+                transformed_data['status'] = 'fail'  # Set overall status to fail if lint fails
+
+            transformed_data['tests'].append(lint_entry)
+            task_id_counter += 1
 
             total_points += linter_points
             total_max += linter_max
