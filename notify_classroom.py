@@ -62,7 +62,7 @@ def notify_classroom(runner_results):
 
     # List the check runs for the suite using GitHub CLI
     check_runs_response = subprocess.run(
-        ['gh', 'api', f'/repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs'],  # '--jq', '.check_runs[] | select(.name == "run-autograding-tests")'],
+        ['gh', 'api', f'/repos/{owner}/{repo}/check-suites/{check_suite_id}/check-runs', '--jq', '.check_runs[] | select(.name == "grading / grading")'],
         capture_output=True,
         text=True
     )
