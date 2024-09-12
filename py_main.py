@@ -10,6 +10,7 @@ import requests
 from py_lint import py_lint
 from py_test import py_test
 from py_classroom_output import generate_feedback_for_classroom
+from notify_classroom import notify_classroom
 from utils import bcolors
 
 DEBUG = False
@@ -32,7 +33,21 @@ def main():
     assignment = repository.split('-' + env_vars['username'])[0]
 
     result = collect_results()
-    generate_feedback_for_classroom(result[1])
+    #generate_feedback_for_classroom(result[1])
+
+    runner_results = [
+        {
+            "results": {
+                "max_score": 100,
+                "tests": [
+                    {"score": 30},
+                    {"score": 40}
+                ]
+            }
+        }
+    ]
+    notify_classroom(runner_results)
+
     update_moodle(
         result=result[0],
         target_url=env_vars['target_url'],
