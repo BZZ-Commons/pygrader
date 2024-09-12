@@ -10,8 +10,8 @@ def notify_classroom(results):
     Args:
         runner_results (list): List of dicts, each containing runner results.
     """
-    max = sum([result['max'] for result in results])
-    points = sum([result['points'] for result in results])
+    max = float(sum([result['max'] for result in results]))
+    points = float(sum([result['points'] for result in results]))
 
 
     runner_results = [
