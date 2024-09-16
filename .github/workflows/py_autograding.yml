@@ -51,4 +51,4 @@ jobs:
           if [ -f ./autograde/requirements.txt ]; then pip3 install -r ./autograde/requirements.txt; fi
 
       - name: Run Tests and Upload to Moodle
-        run: python3 ./autograde/py_main.py
+        run: python3 ./autograde/pygrader_main.py
