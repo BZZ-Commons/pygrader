@@ -99,6 +99,5 @@ def notify_classroom(results):
     if update_response.returncode != 0:
         print(f"{bcolors.FAIL}❌ Upload to Classroom failed.{bcolors.ENDC}")
     else:
-        print(f"Check run updated: {text}")
         print(f"{bcolors.OKGREEN}✅ Upload to Classroom successful.{bcolors.ENDC}")
         return
