@@ -7,10 +7,9 @@ import xml.etree.ElementTree as ET
 
 import requests
 
-from py_lint import py_lint
-from py_test import py_test
-from py_classroom_output import generate_feedback_for_classroom
 from notify_classroom import notify_classroom
+from pylint_runner import py_lint
+from pytest_runner import py_test
 from utils import bcolors
 
 DEBUG = False
@@ -33,9 +32,6 @@ def main():
     assignment = repository.split('-' + env_vars['username'])[0]
 
     result = collect_results()
-    #generate_feedback_for_classroom(result[1])
-    print('BBBB')
-    notify_classroom(result[1])
 
     update_moodle(
         result=result[0],
@@ -47,8 +43,7 @@ def main():
         external_link=f'{env_vars["server"]}/{env_vars["repo_path"]}'
     )
 
-
-
+    notify_classroom(result[1])
 
 
 def collect_results() -> dict:
@@ -59,7 +54,8 @@ def collect_results() -> dict:
     }
 
     # Add the Upload Successfully status badge
-    result['feedback'] += f'![Status Badge](https://img.shields.io/badge/upload-successfully-brightgreen "Optional Title")\n'
+    result[
+        'feedback'] += f'![Status Badge](https://img.shields.io/badge/upload-successfully-brightgreen "Optional Title")\n'
 
     test_result_collection = []
 
@@ -72,10 +68,8 @@ def collect_results() -> dict:
     repo_path = os.environ["REPO"]
     server = os.environ["SERVER"]
 
-
     # Add the link to the repository
     result['feedback'] += f'Link zum Repository: [{repo_path}]({server}/{repo_path})\n'
-
 
     result['points'] = round(result['points'], 2)
 
@@ -166,7 +160,7 @@ def handle_moodle_error(root) -> None:
             print(f"{bcolors.FAIL}❌ No error message found. See log:{bcolors.ENDC}")
             print(f'{bcolors.FAIL}{ET.tostring(root, encoding="unicode")}{bcolors.ENDC}')
 
-    #sys.exit(1)
+    # sys.exit(1)
 
 
 def print_moodle_payload(payload: dict) -> None:
@@ -180,7 +174,6 @@ def print_moodle_payload(payload: dict) -> None:
     print(f'{bcolors.OKCYAN}👤 User : \t\t{payload["user_name"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}🔗 Link : \t\t{payload["externallink"]}{bcolors.ENDC}')
-
 
 
 if __name__ == '__main__':
