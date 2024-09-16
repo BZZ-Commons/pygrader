@@ -34,7 +34,7 @@ jobs:
         with:
           repository: BZZ-Commons/pygrader
           path: autograde
-          ref: feature_classroom
+          ref: feature_refactor
 
       - name: Copy conftest.py to student repo
         run: cp ./autograde/conftest.py ./conftest.py
