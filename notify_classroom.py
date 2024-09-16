@@ -11,8 +11,8 @@ def notify_classroom(results):
         results (list): List of dicts, each containing runner results with 'max' and 'points'.
     """
     # Combine max score and total score
-    max_points = sum(result.get('max', 0) for result in results)
-    total_points = sum(result.get('points', 0) for result in results)
+    max_points = float(sum(result.get('max', 0) for result in results))
+    total_points = float(sum(result.get('points', 0) for result in results))
 
     if max_points == 0:
         print("Max points are zero, exiting...")
