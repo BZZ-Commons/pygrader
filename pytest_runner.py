@@ -62,6 +62,8 @@ def run_pytest():
     results['max'] = total_max
     print('\n')
     print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Grand total tests passed: {passed_cases}/{len(cases_list)}{bcolors.ENDC}')
+    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Points: {total_points:.2f}/{total_max:.2f}{bcolors.ENDC}')
+
     return results
 
 def print_header(cases_list):
