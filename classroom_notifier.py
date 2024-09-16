@@ -97,3 +97,4 @@ def notify_classroom(results):
         print(f"Failed to update check run: {update_response.stderr}")
     else:
         print(f"Check run updated: {text}")
+        return True

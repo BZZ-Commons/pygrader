@@ -5,7 +5,7 @@ import requests
 import os
 from utils import bcolors
 
-DEBUG = True
+DEBUG = False
 
 
 def update_moodle(test_result_collection: list):
@@ -35,7 +35,7 @@ def update_moodle(test_result_collection: list):
         'feedback': ''
     }
 
-    result['feedback'] += f'![Status Badge](https://img.shields.io/badge/upload-successfully-brightgreen "Upload to Moodle Successfully")\n'
+    result['feedback'] += f'![Status Badge](https://img.shields.io/badge/moodle-upload-successfully-brightgreen "Upload to Moodle Successfully")\n'
 
     # Iterate over the test result collection to aggregate points, max, and feedback
     for test_result in test_result_collection:
