@@ -1,8 +1,10 @@
+import os
+import sys
 import urllib.parse
 import xml.etree.ElementTree as ET
-import sys
+
 import requests
-import os
+
 from utils import bcolors
 
 DEBUG = False
@@ -151,9 +153,11 @@ def print_moodle_payload(payload: dict) -> None:
     Print the payload that will be sent to Moodle for updating the assignment.
     """
     print('\n\n')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     print(f'{bcolors.HEADER}{bcolors.BOLD}UPLOAD TO MOODLE{bcolors.ENDC}')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}👤 User : \t\t{payload["user_name"]}{bcolors.ENDC}')
     print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')

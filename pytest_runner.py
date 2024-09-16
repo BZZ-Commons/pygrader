@@ -10,7 +10,7 @@ from _pytest.config import ExitCode
 from utils import bcolors
 
 
-def py_test():
+def run_pytest():
     cases_list = load_cases()
     results = initialize_results()
     total_points = 0

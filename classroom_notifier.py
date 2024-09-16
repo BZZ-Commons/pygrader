@@ -2,6 +2,8 @@ import json
 import os
 import subprocess
 
+from utils import bcolors
+
 
 def notify_classroom(results):
     """
@@ -15,29 +17,29 @@ def notify_classroom(results):
     total_points = float(sum(result.get('points', 0) for result in results))
 
     if max_points == 0:
-        print("Max points are zero, exiting...")
+        print(f"{bcolors.FAIL}❌ Max points are zero, exiting...{bcolors.ENDC}")
         return
 
     # Get GitHub token and repository details from environment variables
     token = os.getenv('GH_TOKEN')
     if not token:
-        print("GITHUB_TOKEN is missing")
+        print(f"{bcolors.FAIL}❌ GITHUB_TOKEN is missing{bcolors.ENDC}")
         return
 
     nwo = os.getenv('GITHUB_REPOSITORY', '/')
     if '/' not in nwo:
-        print("Invalid GITHUB_REPOSITORY format")
+        print(f"{bcolors.FAIL}❌ Invalid GITHUB_REPOSITORY format{bcolors.ENDC}")
         return
 
     owner, repo = nwo.split('/')
     if not owner or not repo:
-        print("Owner or repository is missing")
+        print(f"{bcolors.FAIL}❌ Owner or repository is missing{bcolors.ENDC}")
         return
 
     try:
         run_id = int(os.getenv('GITHUB_RUN_ID', ''))
     except ValueError:
-        print("Invalid GITHUB_RUN_ID")
+        print(f"{bcolors.FAIL}❌ Invalid GITHUB_RUN_ID{bcolors.ENDC}")
         return
 
     # Fetch the workflow run using GitHub CLI
@@ -48,7 +50,7 @@ def notify_classroom(results):
     )
 
     if workflow_run_response.returncode != 0:
-        print(f"Failed to fetch workflow run: {workflow_run_response.stderr}")
+        print(f"{bcolors.FAIL}❌ Failed to fetch workflow run: {workflow_run_response.stderr}{bcolors.ENDC}")
         return
 
     try:
@@ -56,7 +58,8 @@ def notify_classroom(results):
         check_suite_url = workflow_data.get('check_suite_url')
         check_suite_id = check_suite_url.split('/')[-1]
     except (json.JSONDecodeError, AttributeError, IndexError):
-        print("Error parsing workflow run response")
+        print(f"{bcolors.FAIL}❌ Error parsing workflow run response{bcolors.ENDC}")
+
         return
 
     # List the check runs for the suite using GitHub CLI
@@ -67,14 +70,14 @@ def notify_classroom(results):
     )
 
     if check_runs_response.returncode != 0:
-        print(f"Failed to list check runs: {check_runs_response.stderr}")
+        print(f"{bcolors.FAIL}❌ Failed to list check runs: {check_runs_response.stderr}{bcolors.ENDC}")
         return
 
     try:
         check_runs_data = json.loads(check_runs_response.stdout)
         check_run_id = check_runs_data["check_runs"][0].get('id')
     except (json.JSONDecodeError, KeyError, IndexError):
-        print("No matching check run found or error parsing response")
+        print(f"{bcolors.FAIL}❌ No matching check run found or error parsing response.{bcolors.ENDC}")
         return
 
     # Update the check run with the autograding results using GitHub CLI
@@ -94,7 +97,8 @@ def notify_classroom(results):
 
     update_response = subprocess.run(update_command, capture_output=True, text=True)
     if update_response.returncode != 0:
-        print(f"Failed to update check run: {update_response.stderr}")
+        print(f"{bcolors.FAIL}❌ Upload to Classroom failed.{bcolors.ENDC}")
     else:
         print(f"Check run updated: {text}")
-        return True
+        print(f"{bcolors.OKGREEN}✅ Upload to Classroom successful.{bcolors.ENDC}")
+        return

@@ -28,7 +28,7 @@ import re
 DEBUG = False
 
 
-def py_lint():
+def run_pylint():
     pylint_opts = [
         '--rcfile=.github/autograding/pylintrc',
     ]
@@ -133,4 +133,4 @@ if __name__ == '__main__':
 
     # loading variables from .env file
     load_dotenv()
-    py_lint()
+    run_pylint()
