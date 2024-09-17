@@ -2,8 +2,10 @@
 This file contains utility functions and classes that are used in the main script.
 """
 
+
 class bcolors:
     """Class to define colors for console output"""
+
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'

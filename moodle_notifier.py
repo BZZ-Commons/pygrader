@@ -31,11 +31,7 @@ def update_moodle(test_result_collection: list):
     assignment = repository.split('-' + env_vars['username'])[0]
 
     # Combine the results into a single summary
-    result = {
-        'points': 0.0,
-        'max': 0.0,
-        'feedback': ''
-    }
+    result = {'points': 0.0, 'max': 0.0, 'feedback': ''}
 
     # Iterate over the test result collection to aggregate points, max, and feedback
     for test_result in test_result_collection:
@@ -57,7 +53,7 @@ def update_moodle(test_result_collection: list):
         'points': result['points'],
         'max': result['max'],
         'externallink': external_link,
-        'feedback': feedback
+        'feedback': feedback,
     }
 
     print_moodle_payload(payload)
@@ -117,15 +113,15 @@ def parse_moodle_response(response_text: str) -> None:
 
             name_key = root.find(".//KEY[@name='name']/VALUE")
             if name_key is not None and name_key.text == 'success':
-                print(f"{bcolors.OKGREEN}✅ Upload to Moodle successful.{bcolors.ENDC}")
+                print(f'{bcolors.OKGREEN}✅ Upload to Moodle successful.{bcolors.ENDC}')
             else:
                 handle_moodle_error(root)
                 sys.exit(1)
         except ET.ParseError as e:
-            print(f"Failed to parse XML: {e}")
+            print(f'Failed to parse XML: {e}')
             sys.exit(1)
     else:
-        print("No valid XML found in the response.")
+        print('No valid XML found in the response.')
         sys.exit(1)
 
 
@@ -135,18 +131,20 @@ def handle_moodle_error(root) -> None:
     """
     message_key = root.find(".//KEY[@name='message']/VALUE")
     if message_key is not None:
-        print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
+        print(f'{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}')
         formatted_message = message_key.text.replace('\\n', '\n')
-        print(f"{bcolors.FAIL}❌ Error message: {formatted_message}{bcolors.ENDC}")
+        print(f'{bcolors.FAIL}❌ Error message: {formatted_message}{bcolors.ENDC}')
     else:
-        message_key = root.find(".//MESSAGE")
+        message_key = root.find('.//MESSAGE')
         if message_key is not None:
-            print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
-            print(f"{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}")
+            print(f'{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}')
+            print(f'{bcolors.FAIL}❌ Error message: {message_key.text}{bcolors.ENDC}')
         else:
-            print(f"{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}")
-            print(f"{bcolors.FAIL}❌ No error message found. See log:{bcolors.ENDC}")
-            print(f'{bcolors.FAIL}{ET.tostring(root, encoding="unicode")}{bcolors.ENDC}')
+            print(f'{bcolors.FAIL}❌ Upload to Moodle failed.{bcolors.ENDC}')
+            print(f'{bcolors.FAIL}❌ No error message found. See log:{bcolors.ENDC}')
+            print(
+                f'{bcolors.FAIL}{ET.tostring(root, encoding="unicode")}{bcolors.ENDC}'
+            )
 
 
 def print_moodle_payload(payload: dict) -> None:
@@ -155,11 +153,17 @@ def print_moodle_payload(payload: dict) -> None:
     """
     print('\n\n')
     print(
-        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}'
+    )
     print(f'{bcolors.HEADER}{bcolors.BOLD}UPLOAD TO MOODLE{bcolors.ENDC}')
     print(
-        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}')
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}'
+    )
+    print(
+        f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Total Points: \t{payload["points"]}/{payload["max"]}{bcolors.ENDC}'
+    )
     print(f'{bcolors.OKCYAN}👤 User : \t\t{payload["user_name"]}{bcolors.ENDC}')
-    print(f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}')
+    print(
+        f'{bcolors.OKCYAN}📝 Assignment : \t{payload["assignment_name"]}{bcolors.ENDC}'
+    )
     print(f'{bcolors.OKCYAN}🔗 Link : \t\t{payload["externallink"]}{bcolors.ENDC}')

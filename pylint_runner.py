@@ -55,12 +55,7 @@ def run_pylint():
 
     reporter = CollectingReporter()
     pylint_obj = lint.Run(pylint_opts, reporter=reporter, exit=False)
-    results = {
-        'category': 'pylint',
-        'points': 0,
-        'max': 10,
-        'feedback': []
-    }
+    results = {'category': 'pylint', 'points': 0, 'max': 10, 'feedback': []}
     max_value = load_config().get('max')
     if max_value:
         results['max'] = max_value
@@ -70,16 +65,19 @@ def run_pylint():
             'category': message.category,
             'message': f'{message.msg_id} {message.msg}',
             'path': message.path,
-            'line': message.line
+            'line': message.line,
         }
         results['feedback'].append(output)
 
     # Scale the points to the max points, and ensure it is not negative
-    results['points'] = round(pylint_obj.linter.stats.global_note/10 * results['max'],2)
+    results['points'] = round(
+        pylint_obj.linter.stats.global_note / 10 * results['max'], 2
+    )
     if results['points'] < 0:
         results['points'] = 0
 
-    if DEBUG: print(results)
+    if DEBUG:
+        print(results)
 
     print_to_console(results, config)
 
@@ -106,9 +104,15 @@ def print_to_console(results: dict, config: dict):
     :param results: The results to print
     """
     print('\n\n')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.BOLD}{bcolors.HEADER}Linting Files {config.get("files")} {bcolors.ENDC}')
-    print(f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}'
+    )
+    print(
+        f'{bcolors.BOLD}{bcolors.HEADER}Linting Files {config.get("files")} {bcolors.ENDC}'
+    )
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}'
+    )
     for feedback in results['feedback']:
         # Map each category to a specific color
         if feedback['category'] == 'error':
@@ -123,9 +127,12 @@ def print_to_console(results: dict, config: dict):
             color = bcolors.ENDC  # Default color
 
         print(
-            f'{color}{feedback["category"]} in {feedback["path"]} line {feedback["line"]}: {feedback["message"]}{bcolors.ENDC}')
+            f'{color}{feedback["category"]} in {feedback["path"]} line {feedback["line"]}: {feedback["message"]}{bcolors.ENDC}'
+        )
 
-    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Points: {results["points"]:.2f}/{results["max"]:.2f}{bcolors.ENDC}')
+    print(
+        f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Points: {results["points"]:.2f}/{results["max"]:.2f}{bcolors.ENDC}'
+    )
 
 
 if __name__ == '__main__':

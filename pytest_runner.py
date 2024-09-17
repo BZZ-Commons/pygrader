@@ -15,7 +15,12 @@ def run_pytest():
     results = initialize_results()
     total_points = 0
     total_max = 0
-    args = ['-k', '', '--disable-warnings', '-q']  # --disable-warnings is used to suppress warnings from py_test.py
+    args = [
+        '-k',
+        '',
+        '--disable-warnings',
+        '-q',
+    ]  # --disable-warnings is used to suppress warnings from py_test.py
 
     print_header(cases_list)
 
@@ -50,10 +55,10 @@ def run_pytest():
             extract_assertion(output, result)
         else:
             result['feedback'] = 'Unknown error, check GitHub Actions for details'
-            print(f"{bcolors.FAIL} Failed to get ExitCode.OK or ExitCode.TESTS_FAILED {bcolors.ENDC}")
-            print(f"{bcolors.FAIL} {output} {bcolors.ENDC}")
-
-
+            print(
+                f'{bcolors.FAIL} Failed to get ExitCode.OK or ExitCode.TESTS_FAILED {bcolors.ENDC}'
+            )
+            print(f'{bcolors.FAIL} {output} {bcolors.ENDC}')
 
         total_points += result['points']
         total_max += result['max']
@@ -61,25 +66,41 @@ def run_pytest():
     results['points'] = total_points
     results['max'] = total_max
     print('\n')
-    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Grand total tests passed: {passed_cases}/{len(cases_list)}{bcolors.ENDC}')
-    print(f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Points: {total_points:.2f}/{total_max:.2f}{bcolors.ENDC}')
+    print(
+        f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Grand total tests passed: {passed_cases}/{len(cases_list)}{bcolors.ENDC}'
+    )
+    print(
+        f'{bcolors.OKCYAN}{bcolors.BOLD}🏆 Points: {total_points:.2f}/{total_max:.2f}{bcolors.ENDC}'
+    )
 
     return results
 
+
 def print_header(cases_list):
     print(
-        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
-    print(f'{bcolors.BOLD}{bcolors.HEADER}Running {len(cases_list)} Tests{bcolors.ENDC}')
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}'
+    )
     print(
-        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}')
+        f'{bcolors.BOLD}{bcolors.HEADER}Running {len(cases_list)} Tests{bcolors.ENDC}'
+    )
+    print(
+        f'{bcolors.HEADER}################################################################################{bcolors.ENDC}'
+    )
 
 
 def print_test_header(test_name, current, total, passed):
     color = bcolors.OKGREEN if passed else bcolors.FAIL
     print('\n\n')
-    print(f'{color}################################################################################{bcolors.ENDC}')
-    print(f'{color}{"✅" if passed else "❌"} Running test: {test_name} {current}/{total}{bcolors.ENDC}')
-    print(f'{color}################################################################################{bcolors.ENDC}')
+    print(
+        f'{color}################################################################################{bcolors.ENDC}'
+    )
+    print(
+        f'{color}{"✅" if passed else "❌"} Running test: {test_name} {current}/{total}{bcolors.ENDC}'
+    )
+    print(
+        f'{color}################################################################################{bcolors.ENDC}'
+    )
+
 
 def extract_assertion(message, result) -> None:
     """Extract assertion failure details from the pytest output."""
@@ -100,18 +121,25 @@ def load_cases() -> list:
     """
     file_unittest = os.environ['FILE_UNITTESTS']
     cases = load_file(f'./.github/autograding/{file_unittest}')
-    cases_list = [Testcase(name=item['name'], function=item['function'], timeout=item['timeout'], points=item['points']) for item in cases] if cases else []
+    cases_list = (
+        [
+            Testcase(
+                name=item['name'],
+                function=item['function'],
+                timeout=item['timeout'],
+                points=item['points'],
+            )
+            for item in cases
+        ]
+        if cases
+        else []
+    )
     return cases_list
 
 
 def initialize_results():
     """Initialize the results dictionary."""
-    return {
-        'category': 'pytest',
-        'points': 0,
-        'max': 0,
-        'feedback': []
-    }
+    return {'category': 'pytest', 'points': 0, 'max': 0, 'feedback': []}
 
 
 def initialize_case_result(case):
@@ -122,7 +150,7 @@ def initialize_case_result(case):
         'expected': '',
         'actual': '',
         'points': 0,
-        'max': case.points
+        'max': case.points,
     }
 
 
@@ -145,6 +173,7 @@ class Testcase:
     """
     Definition of a test case
     """
+
     name: str
     function: str
     timeout: int
