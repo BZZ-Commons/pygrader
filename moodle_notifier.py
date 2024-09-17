@@ -120,6 +120,7 @@ def parse_moodle_response(response_text: str) -> None:
                 print(f"{bcolors.OKGREEN}✅ Upload to Moodle successful.{bcolors.ENDC}")
             else:
                 handle_moodle_error(root)
+                sys.exit(1)
         except ET.ParseError as e:
             print(f"Failed to parse XML: {e}")
             sys.exit(1)
