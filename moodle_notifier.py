@@ -43,10 +43,11 @@ def update_moodle(test_result_collection: list):
 
     # Construct the external link to the repo
     external_link = f'{env_vars["server"]}/{env_vars["repo_path"]}'
+    result['feedback'] += f'Link zum Repository: [{external_link}]({external_link})\n'
 
-    # Call Moodle API to submit the result
     url = f'{env_vars["target_url"]}/webservice/rest/server.php/?wstoken={env_vars["token"]}&wsfunction={env_vars["function"]}'
     feedback = urllib.parse.quote(result['feedback'])
+
     payload = {
         'assignment_name': assignment,
         'user_name': env_vars['username'],
