@@ -38,20 +38,20 @@ def run_pytest():
             if 'passed' in summary:
                 result['feedback'] = 'Success'
                 result['points'] = case.points
-                print_test_header(case.name, casenum + 1, len(cases_list), True)
+                print_test_header(case.name, casenum + 1, len(cases_list), status="passed")
 
             elif 'xfailed' in summary:
                 result['feedback'] = 'Success: Fails as expected'
                 result['points'] = case.points
-                print_test_header(case.name, casenum + 1, len(cases_list), True)
+                print_test_header(case.name, casenum + 1, len(cases_list), status="passed")
 
             elif 'skipped' in summary:
                 result['feedback'] = 'Test was skipped at this time'
-                print_test_header(case.name, casenum + 1, len(cases_list), True)
+                print_test_header(case.name, casenum + 1, len(cases_list), status="skipped")
 
         elif exitcode == ExitCode.TESTS_FAILED:
             result['feedback'] = 'Test failed, check GitHub Actions for details'
-            print_test_header(case.name, casenum + 1, len(cases_list), False)
+            print_test_header(case.name, casenum + 1, len(cases_list), status="failed")
             extract_assertion(output, result)
         else:
             result['feedback'] = 'Unknown error, check GitHub Actions for details'
@@ -88,14 +88,30 @@ def print_header(cases_list):
     )
 
 
-def print_test_header(test_name, current, total, passed):
-    color = bcolors.OKGREEN if passed else bcolors.FAIL
+def print_test_header(test_name, current, total, status):
+    if status == "passed":
+        color = bcolors.OKGREEN
+        icon = "✅"
+        message = "Test Passed"
+    elif status == "failed":
+        color = bcolors.FAIL
+        icon = "❌"
+        message = "Test Failed"
+    elif status == "skipped":
+        color = bcolors.WARNING  # Assuming you have yellow color for warnings.
+        icon = "❎"
+        message = "Skipped Test"
+    else:
+        color = bcolors.FAIL
+        icon = "❌"
+        message = "Unknown Status"
+
     print('\n\n')
     print(
         f'{color}################################################################################{bcolors.ENDC}'
     )
     print(
-        f'{color}{"✅" if passed else "❌"} Running test: {test_name} {current}/{total}{bcolors.ENDC}'
+        f'{color}{icon} {message}: {test_name} {current}/{total}{bcolors.ENDC}'
     )
     print(
         f'{color}################################################################################{bcolors.ENDC}'
