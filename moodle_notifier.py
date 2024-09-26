@@ -40,9 +40,9 @@ def get_collaborators(repo_path: str):
 
     collaborators = response.json()
     # Filter collaborators with 'admin' role based on role_name
-    admin_collaborators = [collab['login'] for collab in collaborators]
+    collaborators = [collab['login'] for collab in collaborators]
 
-    return admin_collaborators
+    return collaborators
 
 
 def update_moodle(test_result_collection: list):
@@ -64,11 +64,6 @@ def update_moodle(test_result_collection: list):
 
     # Get collaborators with 'admin' role
     collaborators = get_collaborators(env_vars['repo_path'])
-
-    if collaborators:
-        print(f"Collaborators: {', '.join(collaborators)}")
-    else:
-        print('No collaborators found.')
 
     repository = env_vars['repo_path'].split('/')[1]
     assignment = repository.split('-' + env_vars['username'])[0]
@@ -101,6 +96,7 @@ def update_moodle(test_result_collection: list):
     }
 
     print_moodle_payload(payload)
+    print(f"👤 Collaborators: {', '.join(collaborators)}")
 
     if DEBUG:
         print(url)
