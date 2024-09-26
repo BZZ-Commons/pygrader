@@ -29,12 +29,15 @@ def get_admin_collaborators(repo_path: str):
         'Authorization': f'token {os.getenv("GITHUB_TOKEN")}',  # GitHub token from env variables
         'Accept': 'application/vnd.github.v3+json'
     }
+    print(url)
+    print(headers)
 
     # Make the API call
     response = requests.get(url, headers=headers)
 
     if response.status_code != 200:
         print(f'Failed to fetch collaborators: {response.status_code}')
+        print(response.text)
         return []
 
     collaborators = response.json()
