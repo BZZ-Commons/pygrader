@@ -10,7 +10,7 @@ from utils import bcolors
 DEBUG = False
 
 
-def get_admin_collaborators(repo_path: str):
+def get_collaborators(repo_path: str):
     """
     Get the login names of collaborators with the 'admin' role in the repository.
 
@@ -39,9 +39,8 @@ def get_admin_collaborators(repo_path: str):
         return []
 
     collaborators = response.json()
-    print(collaborators)
     # Filter collaborators with 'admin' role based on role_name
-    admin_collaborators = [collab['login'] for collab in collaborators if collab['role_name'] == 'write']
+    admin_collaborators = [collab['login'] for collab in collaborators]
 
     return admin_collaborators
 
@@ -64,12 +63,12 @@ def update_moodle(test_result_collection: list):
     }
 
     # Get collaborators with 'admin' role
-    admin_collaborators = get_admin_collaborators(env_vars['repo_path'])
+    collaborators = get_collaborators(env_vars['repo_path'])
 
-    if admin_collaborators:
-        print(f"Admin collaborators: {', '.join(admin_collaborators)}")
+    if collaborators:
+        print(f"Collaborators: {', '.join(collaborators)}")
     else:
-        print('No admin collaborators found.')
+        print('No collaborators found.')
 
     repository = env_vars['repo_path'].split('/')[1]
     assignment = repository.split('-' + env_vars['username'])[0]
