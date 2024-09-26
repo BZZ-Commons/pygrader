@@ -9,6 +9,41 @@ from utils import bcolors
 
 DEBUG = False
 
+def get_admin_collaborators(repo_path: str):
+    """
+    Get the login names of collaborators with the 'admin' role in the repository.
+
+    Args:
+        repo_path (str): The repository path in the format 'owner/repo'.
+
+    Returns:
+        list: A list of login names of collaborators with the 'admin' role.
+    """
+    owner, repo = repo_path.split('/')
+
+    # GitHub API URL for collaborators
+    url = f'https://api.github.com/repos/{owner}/{repo}/collaborators'
+
+    # Authorization headers
+    headers = {
+        'Authorization': f'token {os.getenv("GITHUB_TOKEN")}',  # GitHub token from env variables
+        'Accept': 'application/vnd.github.v3+json'
+    }
+
+    # Make the API call
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f'Failed to fetch collaborators: {response.status_code}')
+        return []
+
+    collaborators = response.json()
+
+    # Filter collaborators with 'admin' role
+    admin_collaborators = [collab['login'] for collab in collaborators if collab.get('permissions', {}).get('admin')]
+
+    return admin_collaborators
+
 
 def update_moodle(test_result_collection: list):
     """
@@ -26,6 +61,14 @@ def update_moodle(test_result_collection: list):
         'server': os.environ['SERVER'],
         'repo_path': os.environ['REPO'],
     }
+
+    # Get collaborators with 'admin' role
+    admin_collaborators = get_admin_collaborators(env_vars['repo_path'])
+
+    if admin_collaborators:
+        print(f"Admin collaborators: {', '.join(admin_collaborators)}")
+    else:
+        print('No admin collaborators found.')
 
     repository = env_vars['repo_path'].split('/')[1]
     assignment = repository.split('-' + env_vars['username'])[0]
