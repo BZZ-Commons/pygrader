@@ -52,3 +52,9 @@ jobs:
 
       - name: Run Tests/Linter and notify Moodle and Classroom
         run: python3 ./autograde/autograder.py
+
+      - name: Dump github context
+        run: echo "$GITHUB_CONTEXT"
+        shell: bash
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
