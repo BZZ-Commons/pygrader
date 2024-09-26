@@ -39,9 +39,9 @@ def get_admin_collaborators(repo_path: str):
         return []
 
     collaborators = response.json()
-
+    print(collaborators)
     # Filter collaborators with 'admin' role based on role_name
-    admin_collaborators = [collab['login'] for collab in collaborators if collab.get('role_name') == 'admin']
+    admin_collaborators = [collab['login'] for collab in collaborators if collab['role_name'] == 'write']
 
     return admin_collaborators
 
