@@ -9,6 +9,7 @@ from utils import bcolors
 
 DEBUG = False
 
+
 def get_admin_collaborators(repo_path: str):
     """
     Get the login names of collaborators with the 'admin' role in the repository.
@@ -26,24 +27,21 @@ def get_admin_collaborators(repo_path: str):
 
     # Authorization headers
     headers = {
-        'Authorization': f'token {os.getenv("GH_TOKEN")}',  # GitHub token from env variables
+        'Authorization': f'token {os.getenv("GITHUB_TOKEN")}',  # GitHub token from env variables
         'Accept': 'application/vnd.github.v3+json'
     }
-    print(url)
-    print(headers)
 
     # Make the API call
     response = requests.get(url, headers=headers)
 
     if response.status_code != 200:
         print(f'Failed to fetch collaborators: {response.status_code}')
-        print(response.text)
         return []
 
     collaborators = response.json()
 
-    # Filter collaborators with 'admin' role
-    admin_collaborators = [collab['login'] for collab in collaborators if collab.get('permissions', {}).get('admin')]
+    # Filter collaborators with 'admin' role based on role_name
+    admin_collaborators = [collab['login'] for collab in collaborators if collab.get('role_name') == 'admin']
 
     return admin_collaborators
 
