@@ -27,7 +27,7 @@ def get_admin_collaborators(repo_path: str):
 
     # Authorization headers
     headers = {
-        'Authorization': f'token {os.getenv("GITHUB_TOKEN")}',  # GitHub token from env variables
+        'Authorization': f'token {os.getenv("GH_TOKEN")}',  # GitHub token from env variables
         'Accept': 'application/vnd.github.v3+json'
     }
 
