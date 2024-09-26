@@ -10,7 +10,7 @@ env:
   TARGET_URL: ${{ vars.MOODLE_URL }}
   TOKEN: ${{ secrets.MOODLE_TOKEN2 }}
   FUNCTION: mod_externalassignment_update_grade
-  USERNAME: ${{ github.actor }}
+  USERNAME: ${{ github.repository_owner }}
   SERVER: ${{ github.server_url }}
   REPO: ${{ github.repository }}
   FILE_UNITTESTS: unittests.json
