@@ -33,6 +33,7 @@ def get_collaborators(repo_path: str):
 
     # Make the API call
     response = requests.get(url, headers=headers)
+    print(url)
     print(response.text)
 
     if response.status_code != 200:
