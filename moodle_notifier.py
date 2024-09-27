@@ -9,6 +9,38 @@ from utils import bcolors
 
 DEBUG = False
 
+def get_editing_teams(repo_path: str, headers: dict):
+    """
+    Get the login names of teams that have 'push' or 'admin' permissions in the repository.
+
+    Args:
+        repo_path (str): The repository path in the format 'owner/repo'.
+        headers (dict): The headers for the API request.
+
+    Returns:
+        list: A list of team slugs with 'push' or 'admin' permissions.
+    """
+    owner, repo = repo_path.split('/')
+
+    # GitHub API URL for teams
+    teams_url = f'https://api.github.com/repos/{owner}/{repo}/teams'
+
+    # Fetch teams with access to the repository
+    response = requests.get(teams_url, headers=headers)
+    if response.status_code == 200:
+        teams = response.json()
+        # Filter teams with 'push' or 'admin' permissions
+        editing_teams = [
+            team['slug'] for team in teams
+            if team['permissions']['push'] or team['permissions']['admin']
+        ]
+        return editing_teams
+    else:
+        print(f'Failed to fetch teams: {response.status_code}')
+        print(response.text)
+        return []
+
+
 
 def get_collaborators(repo_path: str):
     """
@@ -46,7 +78,8 @@ def get_collaborators(repo_path: str):
         print(response.text)
 
     # If no collaborators, fetch team members
-    collaborators = get_team_members(repo_path, headers)
+    #collaborators = get_team_members(repo_path, headers)
+    collaborators = get_editing_teams(repo_path, headers)
 
     return collaborators
 
