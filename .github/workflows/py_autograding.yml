@@ -15,6 +15,7 @@ env:
   REPO: ${{ github.repository }}
   FILE_UNITTESTS: unittests.json
   FILE_LINT: lint.json
+  TEAM_TOKEN: ${{ secrets.READ_TEAMS }}
 
 permissions:
   checks: write
