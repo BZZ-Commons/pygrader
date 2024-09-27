@@ -78,8 +78,8 @@ def get_collaborators(repo_path: str):
         print(response.text)
 
     # If no collaborators, fetch team members
-    #collaborators = get_team_members(repo_path, headers)
-    collaborators = get_editing_teams(repo_path, headers)
+    collaborators = get_team_members(repo_path, headers)
+    #collaborators = get_editing_teams(repo_path, headers)
 
     return collaborators
 
