@@ -16,10 +16,11 @@ env:
   FILE_UNITTESTS: unittests.json
   FILE_LINT: lint.json
 
-permissions:
-  checks: write
-  actions: read
-  contents: read
+permissions: write-all
+  #checks: write
+  #actions: read
+  #contents: read
+
 
 jobs:
   autograding:
