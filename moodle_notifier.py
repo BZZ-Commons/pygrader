@@ -12,8 +12,7 @@ DEBUG = False
 
 def get_collaborators(repo_path: str):
     """
-    Get the login names of collaborators with the 'admin' role in the repository,
-    including those added via teams.
+    Get the login names of collaborators with the 'admin' role in the repository.
 
     Args:
         repo_path (str): The repository path in the format 'owner/repo'.
@@ -24,10 +23,7 @@ def get_collaborators(repo_path: str):
     owner, repo = repo_path.split('/')
 
     # GitHub API URL for collaborators
-    collaborators_url = f'https://api.github.com/repos/{owner}/{repo}/collaborators'
-
-    # GitHub API URL for teams (if it's an organization repo)
-    teams_url = f'https://api.github.com/repos/{owner}/{repo}/teams'
+    url = f'https://api.github.com/repos/{owner}/{repo}/collaborators'
 
     # Authorization headers
     headers = {
@@ -35,34 +31,18 @@ def get_collaborators(repo_path: str):
         'Accept': 'application/vnd.github.v3+json'
     }
 
-    collaborators = []
+    # Make the API call
+    response = requests.get(url, headers=headers)
 
-    # Fetch direct collaborators
-    response = requests.get(collaborators_url, headers=headers)
-    if response.status_code == 200:
-        collaborators += [collab['login'] for collab in response.json()]
-    else:
+    if response.status_code != 200:
         print(f'Failed to fetch collaborators: {response.status_code}')
-        print(response.text)
+        return []
 
-    # Fetch teams and their members
-    response = requests.get(teams_url, headers=headers)
-    if response.status_code == 200:
-        teams = response.json()
-        for team in teams:
-            team_slug = team['slug']
-            team_members_url = f'https://api.github.com/orgs/{owner}/teams/{team_slug}/members'
-            team_response = requests.get(team_members_url, headers=headers)
-            if team_response.status_code == 200:
-                collaborators += [member['login'] for member in team_response.json()]
-            else:
-                print(f'Failed to fetch team members for team {team_slug}: {team_response.status_code}')
-    else:
-        print(f'Failed to fetch teams: {response.status_code}')
-        print(response.text)
+    collaborators = response.json()
+    # Filter collaborators with 'admin' role based on role_name
+    admin_collaborators = [collab['login'] for collab in collaborators]
 
-    # Remove duplicates
-    return list(set(collaborators))
+    return admin_collaborators
 
 
 def update_moodle(test_result_collection: list):
@@ -83,7 +63,7 @@ def update_moodle(test_result_collection: list):
     }
 
     # Get collaborators with 'admin' role
-    # collaborators = get_collaborators(env_vars['repo_path'])
+    collaborators = get_collaborators(env_vars['repo_path'])
 
     repository = env_vars['repo_path'].split('/')[1]
     assignment = repository.split('-' + env_vars['username'])[0]
@@ -116,7 +96,7 @@ def update_moodle(test_result_collection: list):
     }
 
     print_moodle_payload(payload)
-    # print(f"👤 Collaborators: {', '.join(collaborators)}")
+    print(f"👤 Collaborators: {', '.join(collaborators)}")
 
     if DEBUG:
         print(url)
