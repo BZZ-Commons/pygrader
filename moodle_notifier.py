@@ -96,13 +96,14 @@ def get_team_members(repo_path: str, headers: dict):
         list: A list of team members' login names.
     """
     owner, repo = repo_path.split('/')
+    print(os.getenv("TEAM_TOKEN"))
     headers = {
         'Authorization': f'token {os.getenv("TEAM_TOKEN")}',  # GitHub token from env variables
         'Accept': 'application/vnd.github.v3+json'
     }
     # GitHub API URL for teams (if it's an organization repo)
     teams_url = f'https://api.github.com/repos/{owner}/{repo}/teams'
-
+    print(teams_url)
     team_members = []
 
     # Fetch teams and their members
