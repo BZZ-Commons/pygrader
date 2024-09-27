@@ -12,18 +12,19 @@ DEBUG = False
 
 def get_collaborators(repo_path: str):
     """
-    Get the login names of collaborators with the 'admin' role in the repository.
+    Get the login names of collaborators with the 'admin' role in the repository,
+    including those added via teams only if there are no direct collaborators.
 
     Args:
         repo_path (str): The repository path in the format 'owner/repo'.
 
     Returns:
-        list: A list of login names of collaborators with the 'admin' role.
+        list: A list of login names of collaborators or team members.
     """
     owner, repo = repo_path.split('/')
 
     # GitHub API URL for collaborators
-    url = f'https://api.github.com/repos/{owner}/{repo}/collaborators'
+    collaborators_url = f'https://api.github.com/repos/{owner}/{repo}/collaborators'
 
     # Authorization headers
     headers = {
@@ -31,18 +32,60 @@ def get_collaborators(repo_path: str):
         'Accept': 'application/vnd.github.v3+json'
     }
 
-    # Make the API call
-    response = requests.get(url, headers=headers)
+    # Fetch direct collaborators
+    response = requests.get(collaborators_url, headers=headers)
+    collaborators = []
 
-    if response.status_code != 200:
+    if response.status_code == 200:
+        collaborators = [collab['login'] for collab in response.json()]
+        # If we found collaborators, return them
+        if collaborators:
+            return collaborators
+    else:
         print(f'Failed to fetch collaborators: {response.status_code}')
-        return []
+        print(response.text)
 
-    collaborators = response.json()
-    # Filter collaborators with 'admin' role based on role_name
-    admin_collaborators = [collab['login'] for collab in collaborators]
+    # If no collaborators, fetch team members
+    collaborators = get_team_members(repo_path, headers)
 
-    return admin_collaborators
+    return collaborators
+
+
+def get_team_members(repo_path: str, headers: dict):
+    """
+    Get the login names of team members in the repository.
+
+    Args:
+        repo_path (str): The repository path in the format 'owner/repo'.
+        headers (dict): The headers for the API request.
+
+    Returns:
+        list: A list of team members' login names.
+    """
+    owner, repo = repo_path.split('/')
+
+    # GitHub API URL for teams (if it's an organization repo)
+    teams_url = f'https://api.github.com/repos/{owner}/{repo}/teams'
+
+    team_members = []
+
+    # Fetch teams and their members
+    response = requests.get(teams_url, headers=headers)
+    if response.status_code == 200:
+        teams = response.json()
+        for team in teams:
+            team_slug = team['slug']
+            team_members_url = f'https://api.github.com/orgs/{owner}/teams/{team_slug}/members'
+            team_response = requests.get(team_members_url, headers=headers)
+            if team_response.status_code == 200:
+                team_members += [member['login'] for member in team_response.json()]
+            else:
+                print(f'Failed to fetch team members for team {team_slug}: {team_response.status_code}')
+    else:
+        print(f'Failed to fetch teams: {response.status_code}')
+        print(response.text)
+
+    return team_members
 
 
 def update_moodle(test_result_collection: list):
