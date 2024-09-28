@@ -75,6 +75,7 @@ def get_team_members(repo_path: str, headers: dict):
 
     # Fetch teams and their members
     response = requests.get(teams_url, headers=headers)
+    print(response.text)
     if response.status_code == 200:
         teams = response.json()
         for team in teams:
