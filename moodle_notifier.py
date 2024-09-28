@@ -75,9 +75,9 @@ def get_team_members(repo_path: str, headers: dict):
 
     # Fetch teams and their members
     response = requests.get(teams_url, headers=headers)
-    print(response.text)
     if response.status_code == 200:
         teams = response.json()
+        print(teams)
         for team in teams:
             team_slug = team['slug']
             team_members_url = f'https://api.github.com/orgs/{owner}/teams/{team_slug}/members'
@@ -111,7 +111,7 @@ def update_moodle(test_result_collection: list):
     }
 
     # Get collaborators with 'admin' role
-    collaborators = get_collaborators(env_vars['repo_path'])
+    #collaborators = get_collaborators(env_vars['repo_path'])
 
     repository = env_vars['repo_path'].split('/')[1]
     assignment = repository.split('-' + env_vars['username'])[0]
@@ -144,7 +144,7 @@ def update_moodle(test_result_collection: list):
     }
 
     print_moodle_payload(payload)
-    print(f"👤 Collaborators: {', '.join(collaborators)}")
+    #print(f"👤 Collaborators: {', '.join(collaborators)}")
 
     if DEBUG:
         print(url)
