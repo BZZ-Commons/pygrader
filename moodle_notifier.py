@@ -47,7 +47,6 @@ def get_collaborators(repo_path: str):
 
     # If no collaborators, fetch team members
     collaborators = get_team_members(repo_path, headers)
-    #collaborators = get_editing_teams(repo_path, headers)
 
     return collaborators
 
@@ -111,7 +110,7 @@ def update_moodle(test_result_collection: list):
     }
 
     # Get collaborators with 'admin' role
-    #collaborators = get_collaborators(env_vars['repo_path'])
+    collaborators = get_collaborators(env_vars['repo_path'])
 
     repository = env_vars['repo_path'].split('/')[1]
     assignment = repository.split('-' + env_vars['username'])[0]
@@ -144,7 +143,7 @@ def update_moodle(test_result_collection: list):
     }
 
     print_moodle_payload(payload)
-    #print(f"👤 Collaborators: {', '.join(collaborators)}")
+    print(f"👤 Collaborators: {', '.join(collaborators)}")
 
     if DEBUG:
         print(url)
