@@ -99,7 +99,7 @@ def print_test_header(test_name, current, total, status):
         message = "Test Failed"
     elif status == "skipped":
         color = bcolors.WARNING  # Assuming you have yellow color for warnings.
-        icon = "❎"
+        icon = "💤"
         message = "Skipped Test"
     else:
         color = bcolors.FAIL
