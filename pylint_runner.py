@@ -28,31 +28,11 @@ import re
 DEBUG = False
 
 
-def check_and_print_pylintrc():
-    """
-    Check if the pylintrc file exists and print its content.
-    """
-    pylintrc_path = '.github/autograding/pylintrc'
-    if os.path.isfile(pylintrc_path):
-        print(f'pylintrc file found at {pylintrc_path}')
-
-        # Open and print the content of the pylintrc file
-        with open(pylintrc_path, 'r', encoding='UTF-8') as file:
-            content = file.read()
-            print(f'Content of {pylintrc_path}:\n')
-            print(content)
-
-        return True
-    else:
-        print(f'Error: pylintrc file not found at {pylintrc_path}')
-        return False
-
 def run_pylint():
     pylint_opts = [
         '--rcfile=.github/autograding/pylintrc',
     ]
 
-    print(check_and_print_pylintrc())
 
     config = load_config()
 
