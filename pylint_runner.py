@@ -27,11 +27,24 @@ import re
 
 DEBUG = False
 
+def check_pylintrc_exists():
+    """
+    Check if the pylintrc file exists in the expected directory.
+    """
+    pylintrc_path = '.github/autograding/pylintrc'
+    if os.path.isfile(pylintrc_path):
+        print(f'pylintrc file found at {pylintrc_path}')
+        return True
+    else:
+        print(f'Error: pylintrc file not found at {pylintrc_path}')
+        return False
 
 def run_pylint():
     pylint_opts = [
         '--rcfile=.github/autograding/pylintrc',
     ]
+
+    print(check_pylintrc_exists())
 
     config = load_config()
 
@@ -55,7 +68,6 @@ def run_pylint():
 
     reporter = CollectingReporter()
     pylint_obj = lint.Run(pylint_opts, reporter=reporter, exit=False)
-    print(pylint_opts)
     results = {'category': 'pylint', 'points': 0, 'max': 10, 'feedback': []}
     max_value = load_config().get('max')
     if max_value:
