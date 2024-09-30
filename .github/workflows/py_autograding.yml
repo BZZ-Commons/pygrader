@@ -24,15 +24,7 @@ permissions:
 
 
 jobs:
-  get-repo-access:
-    # Call reusable workflow to get access information
-    runs-on: ubuntu-latest
-    uses: BZZ-Commons/repo-access-retriever/.github/workflows/get-repo-access.yml@main  # Replace with the correct org/repo
-    with:
-      repo: ${{ github.repository }}  # Current repo being processed
 
-    outputs:
-      users: ${{ steps.access_list.outputs.users }}
 
   autograding:
     # autograding an assignment in GitHub Classroom
