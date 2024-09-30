@@ -45,48 +45,8 @@ def get_collaborators(repo_path: str):
         print(f'Failed to fetch collaborators: {response.status_code}')
         print(response.text)
 
-    # If no collaborators, fetch team members
-    inputs = {
-        'owner': owner,  # Input to your workflow
-        'repo': repo,    # Input to your workflow
-    }
-    collaborators = trigger_workflow(owner, repo, 'get-repo-access.yml', os.getenv("GH_TOKEN"), ref='main', inputs=None)
-
     return collaborators
 
-
-def trigger_workflow(repo_owner, repo_name, workflow_id, github_token, ref='main', inputs=None):
-    """
-    Trigger a GitHub Action workflow using the GitHub API.
-
-    Args:
-        repo_owner (str): The owner of the repository (org or user).
-        repo_name (str): The name of the repository.
-        workflow_id (str): The workflow file name or ID to trigger.
-        github_token (str): GitHub token or PAT with permissions to trigger the action.
-        ref (str): The git reference (branch, tag) to trigger the workflow on.
-        inputs (dict): A dictionary of input parameters to pass to the workflow.
-
-    Returns:
-        response: The API response from GitHub.
-    """
-    url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/{workflow_id}/dispatches'
-    headers = {
-        'Authorization': f'token {github_token}',
-        'Accept': 'application/vnd.github.v3+json',
-    }
-    data = {
-        'ref': ref,
-        'inputs': inputs if inputs else {}
-    }
-
-    response = requests.post(url, json=data, headers=headers)
-
-    if response.status_code == 204:
-        print('Workflow dispatched successfully!')
-    else:
-        print(f'Failed to dispatch workflow: {response.status_code}, {response.text}')
-    return response
 
 def update_moodle(test_result_collection: list):
     """
