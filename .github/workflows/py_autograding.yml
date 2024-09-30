@@ -51,6 +51,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
           if [ -f ./autograde/requirements.txt ]; then pip3 install -r ./autograde/requirements.txt; fi
+
       - name: Run Tests/Linter and notify Moodle and Classroom
         run: python3 ./autograde/autograder.py
 

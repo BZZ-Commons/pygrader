@@ -46,52 +46,47 @@ def get_collaborators(repo_path: str):
         print(response.text)
 
     # If no collaborators, fetch team members
-    collaborators = get_team_members(repo_path, headers)
+    inputs = {
+        'owner': owner,  # Input to your workflow
+        'repo': repo,    # Input to your workflow
+    }
+    collaborators = trigger_workflow(owner, repo, 'get-repo-access.yml', os.getenv("GH_TOKEN"), ref='main', inputs=None)
 
     return collaborators
 
 
-def get_team_members(repo_path: str, headers: dict):
+def trigger_workflow(repo_owner, repo_name, workflow_id, github_token, ref='main', inputs=None):
     """
-    Get the login names of team members in the repository.
+    Trigger a GitHub Action workflow using the GitHub API.
 
     Args:
-        repo_path (str): The repository path in the format 'owner/repo'.
-        headers (dict): The headers for the API request.
+        repo_owner (str): The owner of the repository (org or user).
+        repo_name (str): The name of the repository.
+        workflow_id (str): The workflow file name or ID to trigger.
+        github_token (str): GitHub token or PAT with permissions to trigger the action.
+        ref (str): The git reference (branch, tag) to trigger the workflow on.
+        inputs (dict): A dictionary of input parameters to pass to the workflow.
 
     Returns:
-        list: A list of team members' login names.
+        response: The API response from GitHub.
     """
-    owner, repo = repo_path.split('/')
-    print(os.getenv("TEAM_TOKEN"))
+    url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/{workflow_id}/dispatches'
     headers = {
-        'Authorization': f'token {os.getenv("TEAM_TOKEN")}',  # GitHub token from env variables
-        'Accept': 'application/vnd.github.v3+json'
+        'Authorization': f'token {github_token}',
+        'Accept': 'application/vnd.github.v3+json',
     }
-    # GitHub API URL for teams (if it's an organization repo)
-    teams_url = f'https://api.github.com/repos/{owner}/{repo}/teams'
-    print(teams_url)
-    team_members = []
+    data = {
+        'ref': ref,
+        'inputs': inputs if inputs else {}
+    }
 
-    # Fetch teams and their members
-    response = requests.get(teams_url, headers=headers)
-    if response.status_code == 200:
-        teams = response.json()
-        print(teams)
-        for team in teams:
-            team_slug = team['slug']
-            team_members_url = f'https://api.github.com/orgs/{owner}/teams/{team_slug}/members'
-            team_response = requests.get(team_members_url, headers=headers)
-            if team_response.status_code == 200:
-                team_members += [member['login'] for member in team_response.json()]
-            else:
-                print(f'Failed to fetch team members for team {team_slug}: {team_response.status_code}')
+    response = requests.post(url, json=data, headers=headers)
+
+    if response.status_code == 204:
+        print('Workflow dispatched successfully!')
     else:
-        print(f'Failed to fetch teams: {response.status_code}')
-        print(response.text)
-
-    return team_members
-
+        print(f'Failed to dispatch workflow: {response.status_code}, {response.text}')
+    return response
 
 def update_moodle(test_result_collection: list):
     """
