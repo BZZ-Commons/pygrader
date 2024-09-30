@@ -55,6 +55,7 @@ def run_pylint():
 
     reporter = CollectingReporter()
     pylint_obj = lint.Run(pylint_opts, reporter=reporter, exit=False)
+    print(pylint_opts)
     results = {'category': 'pylint', 'points': 0, 'max': 10, 'feedback': []}
     max_value = load_config().get('max')
     if max_value:
