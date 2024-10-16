@@ -56,7 +56,7 @@ def run_pytest():
         else:
             result['feedback'] = f'Unknown error "{exitcode}", check GitHub Actions for details'
             print(
-                f'{bcolors.FAIL} Failed to get ExitCode.OK or ExitCode.TESTS_FAILED {bcolors.ENDC}'
+                f'{bcolors.FAIL} Failed to get ExitCode.OK or ExitCode.TESTS_FAILED; exitcode={exitcode} {bcolors.ENDC}'
             )
             print(f'{bcolors.FAIL} {output} {bcolors.ENDC}')
 
