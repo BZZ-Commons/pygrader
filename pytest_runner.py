@@ -54,7 +54,7 @@ def run_pytest():
             print_test_header(case.name, casenum + 1, len(cases_list), status="failed")
             extract_assertion(output, result)
         else:
-            result['feedback'] = 'Unknown error, check GitHub Actions for details'
+            result['feedback'] = f'Unknown error "{exitcode}", check GitHub Actions for details'
             print(
                 f'{bcolors.FAIL} Failed to get ExitCode.OK or ExitCode.TESTS_FAILED {bcolors.ENDC}'
             )
