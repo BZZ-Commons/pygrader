@@ -53,6 +53,9 @@ def run_pytest():
             result['feedback'] = 'Test failed, check GitHub Actions for details'
             print_test_header(case.name, casenum + 1, len(cases_list), status="failed")
             extract_assertion(output, result)
+        elif exitcode == ExitCode.NO_TESTS_COLLECTED:
+            result['feedback'] = f'This test was not executed, maybe the name was wrong?'
+            print_test_header(case.name, casenum + 1, len(cases_list), status="not_run")
         else:
             result['feedback'] = f'Unknown error "{exitcode}", check GitHub Actions for details'
             print(
@@ -101,6 +104,10 @@ def print_test_header(test_name, current, total, status):
         color = bcolors.WARNING  # Assuming you have yellow color for warnings.
         icon = "💤"
         message = "Skipped Test"
+    elif status == 'not_run':
+        color = bcolors.FAIL
+        icon = "⛔"
+        message = 'Test not run'
     else:
         color = bcolors.FAIL
         icon = "❌"
