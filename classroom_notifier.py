@@ -120,7 +120,7 @@ def notify_classroom(results):
 
     update_response = subprocess.run(update_command, capture_output=True, text=True)
     if update_response.returncode != 0:
-        print(f'{bcolors.FAIL}❌ Upload to Classroom failed.{bcolors.ENDC}')
+        print(f'{bcolors.FAIL}❌ Failed to add Check-Run for Github-Classroom.{bcolors.ENDC}')
     else:
-        print(f'{bcolors.OKGREEN}✅ Upload to Classroom successful.{bcolors.ENDC}')
+        print(f'{bcolors.OKGREEN}✅ Added Check-Run for Github-Classroom.{bcolors.ENDC}')
         return
