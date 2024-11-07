@@ -67,6 +67,8 @@ def update_moodle(test_result_collection: list):
 
     # Get collaborators with 'admin' role
     collaborators = get_collaborators(env_vars['repo_path'])
+    if len(collaborators) > 0:
+        env_vars['username'] = collaborators[0]
 
     repository = env_vars['repo_path'].split('/')[1]
     assignment = repository.split('-' + env_vars['username'])[0]

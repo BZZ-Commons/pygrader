@@ -9,6 +9,7 @@ DEBUG = False
 
 
 def main():
+    print ('#### TESTING ###')
     # Collect results
     test_result_collection = collect_results()
 
