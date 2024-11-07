@@ -1,4 +1,4 @@
-name: TESTING GitHub Classroom autograding and update moodle
+name: GitHub Classroom autograding and update moodle
 
 on:
   workflow_call:
@@ -38,7 +38,7 @@ jobs:
         with:
           repository: BZZ-Commons/pygrader
           path: autograde
-          ref: collaborator
+          ref: main
 
       - name: Copy conftest.py to student repo
         run: cp ./autograde/conftest.py ./conftest.py
