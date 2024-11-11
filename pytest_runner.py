@@ -31,7 +31,6 @@ def run_pytest():
 
         with Capturing() as output:
             exitcode = pytest.main(args)
-
         if exitcode == ExitCode.OK:
             passed_cases += 1
             summary = output[len(output) - 1]
@@ -39,18 +38,17 @@ def run_pytest():
                 result['feedback'] = 'Success'
                 result['points'] = case.points
                 print_test_header(case.name, casenum + 1, len(cases_list), status="passed")
-
             elif 'xfailed' in summary:
                 result['feedback'] = 'Success: Fails as expected'
                 result['points'] = case.points
                 print_test_header(case.name, casenum + 1, len(cases_list), status="passed")
-
             elif 'skipped' in summary:
                 result['feedback'] = 'Test was skipped at this time'
                 print_test_header(case.name, casenum + 1, len(cases_list), status="skipped")
 
         elif exitcode == ExitCode.TESTS_FAILED:
-            result['feedback'] = 'Test failed, check GitHub Actions for details'
+            details = output[len(output) - 2].split('-')[1].strip()
+            result['feedback'] = f'Test failed - {details}'
             print_test_header(case.name, casenum + 1, len(cases_list), status="failed")
             extract_assertion(output, result)
         elif exitcode == ExitCode.NO_TESTS_COLLECTED:
