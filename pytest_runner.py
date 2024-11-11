@@ -47,8 +47,12 @@ def run_pytest():
                 print_test_header(case.name, casenum + 1, len(cases_list), status="skipped")
 
         elif exitcode == ExitCode.TESTS_FAILED:
-            details = output[len(output) - 2].split('-')[1].strip()
-            result['feedback'] = f'Test failed - {details}'
+            try:
+                details = output[len(output) - 2].split('-')[1].strip()
+                result['feedback'] = f'Test failed - {details}'
+            except (IndexError, AttributeError):
+                # If there's an error accessing `details`, fall back to a generic message
+                result['feedback'] = 'Test failed, check GitHub Actions for more details.'
             print_test_header(case.name, casenum + 1, len(cases_list), status="failed")
             extract_assertion(output, result)
         elif exitcode == ExitCode.NO_TESTS_COLLECTED:
