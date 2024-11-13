@@ -18,9 +18,12 @@ def run_pytest():
     args = [
         '-k',
         '',
-        '--disable-warnings',
+        '--disable-warnings', # --disable-warnings is used to suppress warnings from py_test.py
         '-q',
-    ]  # --disable-warnings is used to suppress warnings from py_test.py
+        '',
+        '--timeout_method=signal' # --signal is used to timeout single unit-test
+    ]
+
 
     print_header(cases_list)
 
@@ -28,6 +31,7 @@ def run_pytest():
     for casenum, case in enumerate(cases_list):
         result = initialize_case_result(case)
         args[1] = case.function
+        args[4] = f'--timeout={case.timeout}'
 
         with Capturing() as output:
             exitcode = pytest.main(args)
@@ -50,6 +54,7 @@ def run_pytest():
             try:
                 details = output[len(output) - 2].split('-')[1].strip()
                 result['feedback'] = f'Test failed - {details}'
+                print(f'{bcolors.FAIL}{result["feedback"]}{bcolors.ENDC}')
             except (IndexError, AttributeError):
                 # If there's an error accessing `details`, fall back to a generic message
                 result['feedback'] = 'Test failed, check GitHub Actions for more details.'
