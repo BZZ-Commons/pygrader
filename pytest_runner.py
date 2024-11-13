@@ -146,7 +146,7 @@ def extract_error_message(output, result) -> None:
             result['feedback'] = f'Test failed - {details}'
             msg += f'Test failed - {details}'
         except:
-            msg = "Test failed:\n" + "\n".join(output)
+            #msg = "Test failed:\n" + "\n".join(output)
             result['feedback'] = 'Test failed, check GitHub Actions for more details.'
 
     return msg
