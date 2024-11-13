@@ -52,7 +52,8 @@ def run_pytest():
 
         elif exitcode == ExitCode.TESTS_FAILED:
             print_test_header(case.name, casenum + 1, len(cases_list), status="failed")
-            print(f'{bcolors.FAIL}{extract_error_message(output, result)}{bcolors.ENDC}')
+            error_msg = extract_error_message(output, result)
+            print(f'{bcolors.FAIL}{error_msg}{bcolors.ENDC}')
 
 
         elif exitcode == ExitCode.NO_TESTS_COLLECTED:
@@ -130,27 +131,33 @@ def print_test_header(test_name, current, total, status):
 def extract_error_message(output, result) -> None:
     """Extract assertion failure details from the pytest output."""
     msg = ''
-    assertion_error = next((line for line in output if 'Comparing values:' in line), None)
+    try:
+        assertion_error = next((line for line in output if 'Comparing values:' in line), None)
 
-    if assertion_error:
-        index = output.index(assertion_error)
-        result['feedback'] = 'Assertion Error'
-        # Use default 'N/A' if indices are out of range
-        result['expected'] = output[index + 1].split(':', 1)[1].strip() if index + 1 < len(output) else 'N/A'
-        result['actual'] = output[index + 2].split(':', 1)[1].strip() if index + 2 < len(output) else 'N/A'
-        msg += f'Expected :\t {result["expected"]}\n'
-        msg += f'Actual :\t {result["actual"]}\n'
-    else:
-        try:
-            details = output[-2].split('-')[1].strip()
-            result['feedback'] = f'Test failed - {details}'
-            msg += f'Test failed - {details}'
-        except:
-            #msg = "Test failed:\n" + "\n".join(output)
-            msg += f'Test failed:\n {output}'
-            result['feedback'] = 'Test failed, check GitHub Actions for more details.'
+        if assertion_error:
+            index = output.index(assertion_error)
+            result['feedback'] = 'Assertion Error'
+            # Use default 'N/A' if indices are out of range
+            result['expected'] = output[index + 1].split(':', 1)[1].strip() if index + 1 < len(output) else 'N/A'
+            result['actual'] = output[index + 2].split(':', 1)[1].strip() if index + 2 < len(output) else 'N/A'
+            msg += f'Expected :\t {result["expected"]}\n'
+            msg += f'Actual :\t {result["actual"]}\n'
+        else:
+            for text in output :
+                if text and text[0] == 'E' and (not text[1].isalpha()):
+                    if text[1:].strip()[0] != '[':
+                        msg += f'{text[1:].strip()}\n'
+            try:
+                details = output[-2].split('-')[1].strip()
+                result['feedback'] = f'Test failed - {details}'
+            except:
+                result['feedback'] = 'Test failed, check GitHub Actions for more details.'
 
-    return msg
+    except:
+        msg += 'Test failed, run local pytest for more infos'
+        result['feedback'] = 'Test failed, run local pytest for more infos'
+    finally:
+        return msg
 
 
 def load_cases() -> list:
