@@ -141,13 +141,12 @@ def extract_error_message(output, result) -> None:
         msg += f'Expected :\t {result["expected"]}\n'
         msg += f'Actual :\t {result["actual"]}\n'
     else:
-        # Check if output has at least two lines, otherwise provide a generic message
         try:
             details = output[-2].split('-')[1].strip()
             result['feedback'] = f'Test failed - {details}'
             msg += f'Test failed - {details}'
         except:
-            msg += f'Test failed, Stacktrace:\n {output}'
+            msg = "Test failed:\n" + "\n".join(output)
             result['feedback'] = 'Test failed, check GitHub Actions for more details.'
 
     return msg
