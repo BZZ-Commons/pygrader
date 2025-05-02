@@ -7,7 +7,7 @@ import requests
 
 from utils import bcolors
 
-DEBUG = True
+DEBUG = False
 
 
 def get_collaborators(repo_path: str):
