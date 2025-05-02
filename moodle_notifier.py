@@ -157,7 +157,7 @@ def parse_moodle_response(response_text: str) -> None:
             root = ET.fromstring(xml_content)
 
             name_key = root.find(".//KEY[@name='name']/VALUE")
-            if name_key is not None and name_key.text == 'success':
+            if name_key is not None and 'success' in name_key.text:
                 print(f'{bcolors.OKGREEN}✅ Upload to Moodle successful.{bcolors.ENDC}')
             else:
                 handle_moodle_error(root)
