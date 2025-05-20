@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout student repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Checkout autograde repo
         uses: actions/checkout@v4
@@ -39,9 +41,15 @@ jobs:
           repository: BZZ-Commons/pygrader
           path: autograde
           ref: main
+          fetch-depth: 1
 
-      - name: Copy conftest.py to student repo
-        run: cp ./autograde/conftest.py ./conftest.py
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -53,6 +61,9 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
           if [ -f ./autograde/requirements.txt ]; then pip3 install -r ./autograde/requirements.txt; fi
+
+      - name: Copy conftest.py to student repo
+        run: cp ./autograde/conftest.py ./conftest.py
 
       - name: Run Tests/Linter and notify Moodle and Classroom
         run: python3 ./autograde/autograder.py
