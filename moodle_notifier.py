@@ -70,7 +70,12 @@ def update_moodle(test_result_collection: list):
     if len(collaborators) > 0:
         env_vars['username'] = collaborators[0]
 
-    repository = env_vars['repo_path'].split('/')[1]
+    organisation, repository = env_vars['repo_path'].split('/')
+
+    # Strip the organisation prefix from the repository name (e.g. 'BZZ-M323-lu01-user' -> 'lu01-user')
+    if repository.startswith(organisation + '-'):
+        repository = repository[len(organisation) + 1:]
+
     assignment = repository.split('-' + env_vars['username'])[0]
 
     # Combine the results into a single summary
